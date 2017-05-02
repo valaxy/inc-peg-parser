@@ -7,23 +7,39 @@ import ParsingNode from '../parsingNode'
 class AnyOfProgress extends ParseProgress {
     private _choice = -1
     private _step = -1
+    private _chars: string
 
-    constructor(anyOf) {
+    constructor(anyOf: AnyOf) {
         super()
+        this._chars = anyOf.chars
     }
 
-    parse({text, pos, setPos}) {
-        if (pos >= text.length) return false
-        if (this._chars.indexOf(text[pos]) < 0) return false
+    nextChoice() {
+        this._choice += 1
+        return this._choice < 1
+    }
 
-        setPos(pos + 1)
-        return true
+    nextStep() {
+        this._step += 1
+        return this._step < 1
+    }
+
+    hasNextStep() {
+        return this._step < 0
+    }
+
+    consume(symbol: ParsingNode) {
+        if (symbol.isTerminal) {
+            return this._chars.indexOf(<string>(symbol.form)) >= 0
+        } else {
+            return false
+        }
     }
 }
 
 class AnyOf extends Form {
     get chars() { return this._chars }
-    
+
     constructor(private _chars: string) {
         super()
     }

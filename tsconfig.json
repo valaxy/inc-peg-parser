@@ -4,9 +4,11 @@
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,
-        "outDir": "../dest/"
+        "outDir": "dest/"
     },
     "include": [
-        "../lib/**/*.ts"
+        "build/typings/",
+        "lib/**/*.ts",
+        "test/**/*.ts"
     ]
 }
