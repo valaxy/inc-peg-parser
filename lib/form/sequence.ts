@@ -1,21 +1,20 @@
-import Rule from './rule'
+import Form from './form'
+import SequenceProgress from '../parseProgress/sequence'
 
-export default class Sequence extends Rule {
-    private _rules
+class Sequence extends Form {
+    private _subForms
 
-    constructor(...rules:Rule[]) {
+    get subForms() { return this._subForms }
+
+    constructor(...subForms: Form[]) {
         super()
-        this._rules = rules
+        this._subForms = subForms
     }
 
-    parse({text, pos, setPos, }):boolean {
-        let p = pos
-        for (let rule of this._rules) {
-            if (!rule.parse.apply(this, arguments)) {
-                setPos(p)
-                return false
-            }
-        }
-        return true
+    createProgress() {
+        return new SequenceProgress(this)
     }
 }
+
+
+export default Sequence

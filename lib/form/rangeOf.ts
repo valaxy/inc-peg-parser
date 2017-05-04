@@ -1,6 +1,6 @@
-import Rule from "./rule"
+import Form from './form'
 
-export default class RangeOf extends Rule {
+export default class RangeOf extends Form {
 
     constructor(private _charX:string, private _charY:string) {
         super()
