@@ -1,22 +1,22 @@
 import ParseProgress from './ParseProgress'
-
+import Choice from '../form/choice'
 
 class ChoiceProgress extends ParseProgress {
-    private _subForms: Form[]
-    private _choice: number
-    private _step: number
+    private _choice: number = -1
+    private _step: number = -1
 
-    constructor(choice: Choice) {
+    get currentSubForm() {
+        return this._form.subForms[this._choice]
+    }
+
+    constructor(private _form: Choice) {
         super()
-        this._subForms = choice.subForms
-        this._choice = -1
-        this._step = -1
     }
 
     nextChoice() {
         this._step = -1
         this._choice += 1
-        return this._choice < this._subForms.length
+        return this._choice < this._form.subForms.length
     }
 
     nextStep() {
@@ -24,11 +24,8 @@ class ChoiceProgress extends ParseProgress {
         return this._step < 1 // 只有1步
     }
 
-    consume(symbol: string|Form) {
-        if (symbol instanceof Form) {
-            let form = this._subForms[this._choice]
-        }
-        return form.createChoice()
+    hasNextStep() {
+        return this._step < 0
     }
 }
 
