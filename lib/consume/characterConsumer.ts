@@ -1,16 +1,18 @@
 import { ChunkProgress, SequenceProgress, ChoiceProgress, RuleProgress } from '../parseProgress/index'
 
 // 操作:
-// - descend, 添加子节点, 如果value是string则consume
+// - consume, 添加传入子节点并且移进
+// - descend, 添加value并且不移进
 // - back, 回溯到上一个可选节点
+// - break, 分解传入的节点, 移除根
+
 
 /** 一个字节一个字节的解析 */
 export default {
     chunk(chunk: ChunkProgress, ch: string) {
         if (chunk.currentCharacter == ch) {
             return {
-                type: 'descend',
-                value: ch // a string
+                type: 'consume'
             }
         }
 

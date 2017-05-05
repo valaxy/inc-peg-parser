@@ -7,6 +7,7 @@ export default class ParsingNode {
     private _form: Form|string
     private _progress: ParseProgress
     private _isNaming: boolean // 是否是命名节点
+    private _nextUnboundNode: ParsingNode
 
     get parent() { return this._parent }
 
@@ -16,9 +17,13 @@ export default class ParsingNode {
 
     get progress() { return this._progress }
 
-    get isNaming() { return this._isNaming }
+    get isNamed() { return this._isNaming }
 
     get isTerminal() { return this.hasNoChildren() }
+
+    get nextUnboundNode() { return this._nextUnboundNode }
+
+    set nextUnboundNode(node) { this._nextUnboundNode = node }
 
     // constructor('a')
     // constructor(new Form)
@@ -45,13 +50,58 @@ export default class ParsingNode {
         this._children = []
     }
 
+    seperateAtRoot(): ParsingNode[] {
+
+    }
+
     /** 分离叶节点并返回 */
     seperateLeafs(): ParsingNode[] {
 
     }
 
+    seperateRightRelativeNodes(): ParsingNode[] {
+
+    }
+
+    remove(): ParsingNode {
+
+    }
+
+    leftmost(): ParsingNode {
+
+    }
+
+    rightmost(): ParsingNode {
+
+    }
+
+    breakRightRelative() {
+        let node = this
+        let subTrees = []
+        let previousNode = this
+        while (true) {
+            let parent = node.parent
+            if (parent) { return subTrees }
+
+            let index = parent.children.indexOf(node)
+            for (let i=index+1; i<parent.children.length; i++) {
+                let nextTreeRoot = parent.children[i].remove()
+                subTrees.push(nextTreeRoot)
+                previousNode.nextUnboundNode = nextTreeRoot // TODO 这里如果有算法可以把unboundNode绑定到非终结节点上, 也许可以提高速度
+                previousNode = nextTreeRoot.rightmost()
+            }
+            node = parent
+        }
+    }
+
+
     add(otherNode) {
         otherNode._parent = this
         this._children.push(otherNode)
+    }
+
+
+    getNextUnboundNode() {
+        
     }
 }

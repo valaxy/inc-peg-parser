@@ -2,10 +2,11 @@ import ParsingNode from './parsingNode'
 import ParsingStack from './parsingStack'
 
 export default class Session {
-    private _parsingStack: ParsingStack // 标识状态
     private _progressNode: ParsingNode // 标识状态
+    private _startNode: ParsingNode
+    private _endNode: ParsingNode
 
-    constructor() {
+    constructor(private _consumer) {
 
     }
 
@@ -23,16 +24,6 @@ export default class Session {
         }
     }
 
-    private _refreshProgressNode() {
-        this._progressNode  = this._findUndoneNode(this._progressNode)
-    }
-
-    private _createParsingNode(count: number) {
-        let text = this
-        let node = { pos: this._pos }
-        return node
-    }
-
     private _findUndoneNode(node: ParsingNode) {
         while (true) {
             if (node == null) { return null }
@@ -44,16 +35,28 @@ export default class Session {
     // b作为子节点接入a
     private _graft(a: ParsingNode, b: ParsingNode) {
         a.progress.nextStep()
-        if (a.progress.consume(b)) {
-            a.add(b)
-            return true
+        let { type, value } = a.form.consume(b.form)
+        switch (type) {
+            case 'consume':
+                a.add(b)
+                this._parsingStack.pop()
+            case 'descend':
+                a.add(new ParsingNode(value))
+            case 'back':
+                this._nextChoice()
+            default:
+                throw new Error('no update')
         }
-        return false
     }
 
-    parse() {
+
+    private _maintainAt(node: ParsingNode) {
+        this._progressNode = node
+        let parsingNode
+        
         while (true) {
-            this._refreshProgressNode()
+            // refresh progress
+            this._progressNode = this._findUndoneNode(this._progressNode)
 
             // 解析完毕(利用结尾哨兵保证此时一定是解析完毕状态)
             // assertTrue(this._parsingStack.isEmpty())
@@ -62,34 +65,33 @@ export default class Session {
             }
 
             // 尝试移植
-            let unboundNode = this._parsingStack.pop()
+            let unboundNode = this._parsingStack.peek()
             if (this._graft(this._progressNode, unboundNode)) { continue }
-
-            // 移植失败
-            if (unboundNode.hasNoChildren()) { // 终结符
-                this._nextChoice() // 可能导致progressNode为null
-            } else { // 非终结符
-                let fallbackNodes = unboundNode.seperateLeafs()
-                this._parsingStack.push(...fallbackNodes.reverse())
-            }
         }
     }
 
-    lookForward(n: number): string {
-        throw new Error()
-    }
+    /**
+     * insert a range of symbols after `target`
+     * start: first symbol
+     * end: last symbol
+     */
+    insertAfter(target: ParsingNode, start: ParsingNode, end: ParsingNode) {
+        if (target.nextUnboundNode) {
+            end.nextUnboundNode = target.nextUnboundNode
+            target.nextUnboundNode = start
+        } else {
+            target.breakRightRelative()
+        }
 
-    match(): void {
-        this._parsingNode.add(this._createParsingNode(count))
-    }
-
-    mismatch(): void {
-
-    }
-
-    back(): boolean {
-        this._parsingNode.removeChildren()
-        this._pos = this._parsingNode.pos
-        return false
+        this._maintainAt(target)
     }
 }
+
+
+// // 移植失败
+// if (unboundNode.hasNoChildren()) { // 终结符
+//     this._nextChoice() // 可能导致progressNode为null
+// } else { // 非终结符
+//     let fallbackNodes = unboundNode.seperateLeafs()
+//     this._parsingStack.push(...fallbackNodes.reverse())
+// }
