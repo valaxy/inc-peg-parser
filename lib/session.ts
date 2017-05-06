@@ -10,9 +10,42 @@ export default class Session {
 
     }
 
+    private _refreshProgress() {
+        this._progressNode = this._findUndoneNode(this._progressNode)
+    }
+
+    private _findUndoneNode(node: ParsingNode) {
+        while (true) {
+            if (node == null) { return null }
+            if (node.progress.hasNextStep()) { return node }
+            node = node.parent
+        }
+    }
+
+
+    private _consume(progress: ParsingNode, undecided: ParsingNode) {
+        if (typeof undecided.form != 'string') { throw new Error('impossible undecided.form != "string"') }
+        progress.add(undecided)
+        return undecided.nextUnboundNode
+    }
+
+    private _descend(progress: ParsingNode) {
+        progress.add(new ParsingNode(value))
+    }
+
+    private _break(node: ParsingNode) {
+        if (node.nextUnboundNode != null) { throw new Error('impossible node.nextUnboundNode != null') }
+        if (node.children.length == 0) { throw new Error('impossible node.children.length == 0') }
+        let children = node.seperateAtRoot() // now, node can gc
+        for (let i = 0; i<children.length - 1; i++) {
+            children[i].nextUnboundNode = children[i + 1]
+        }
+        this._progressNode.nextUnboundNode = children[0]
+    }
+
     // 一旦当前form匹配失败就需要选择下一个choice
     // 若下一个choice也失败, 则需要parent选择下一个choice, 如此直到根节点
-    private _nextChoice() {
+    private _back() {
         while (true) {
             if (this._progressNode == null) {
                 return null
@@ -24,36 +57,10 @@ export default class Session {
         }
     }
 
-    private _findUndoneNode(node: ParsingNode) {
-        while (true) {
-            if (node == null) { return null }
-            if (node.progress.hasNextStep()) { return node }
-            node = node.parent
-        }
-    }
-
-    // b作为子节点接入a
-    private _graft(a: ParsingNode, b: ParsingNode) {
-        a.progress.nextStep()
-        let { type, value } = a.form.consume(b.form)
-        switch (type) {
-            case 'consume':
-                a.add(b)
-                this._parsingStack.pop()
-            case 'descend':
-                a.add(new ParsingNode(value))
-            case 'back':
-                this._nextChoice()
-            default:
-                throw new Error('no update')
-        }
-    }
-
-
     private _maintainAt(node: ParsingNode) {
         this._progressNode = node
         let parsingNode
-        
+
         while (true) {
             // refresh progress
             this._progressNode = this._findUndoneNode(this._progressNode)
@@ -65,7 +72,24 @@ export default class Session {
             }
 
             // 尝试移植
+            let a = this._progressNode
             let unboundNode = this._parsingStack.peek()
+
+            a.progress.nextStep()
+            let { type, value } = a.form.consume(b.form)
+
+            switch (type) {
+                case 'consume':
+                    this._consume(a, b)
+                case 'descend':
+                    this._descend(a, b)
+                case 'back':
+                    this._back()
+                case 'break':
+                    this._break(b)
+                default:
+                    throw new Error('no update')
+            }
             if (this._graft(this._progressNode, unboundNode)) { continue }
         }
     }
