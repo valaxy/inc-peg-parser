@@ -1,5 +1,4 @@
 import ParsingNode from './parsingNode'
-import ParsingStack from './parsingStack'
 import Form from './form/form'
 import ParsingProvider from './parsing/parsingProvider'
 
@@ -73,7 +72,7 @@ export default class Session {
             if (progress.progress.nextChoice()) {
                 if (progress.nextUnboundNode) { throw new Error("impossible: progress.nextUnboundNode exist") }
                 let provider = new ParsingProvider(progress)
-                provider.breakRootElement()
+                provider.breakdownMainTree()
 
                 return {
                     nextProgress: progress
@@ -82,6 +81,10 @@ export default class Session {
 
             progress = progress.parent
         }
+    }
+
+    private _parse(form: any, form2: any): any {
+
     }
 
     private _maintainAt(node: ParsingNode) {
@@ -101,7 +104,7 @@ export default class Session {
             // 尝试移植
             let unboundNode = this._progressNode.nextUnboundNode
             this._progressNode.progress.nextStep()
-            let { type, value } = (this._progressNode.form as Form).consume(unboundNode.form)
+            let { type, value } = this._parse(this._progressNode.form as Form, unboundNode.form)
 
             switch (type) {
                 case 'consume':

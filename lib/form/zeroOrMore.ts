@@ -1,9 +1,9 @@
 import Form from './form'
 import ZeroOrMoreProgress from '../parseProgress/zeroOrMore'
 
-class ZeroOrMore extends Form {
+export default class ZeroOrMore extends Form {
     get id() { return 8 }
-    
+
     get subForm() { return this._subForm }
 
     constructor(private _subForm: Form) {

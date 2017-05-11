@@ -4,7 +4,6 @@ import { ChunkProgress, SequenceProgress, ChoiceProgress, RuleProgress } from '.
 // - consume, 添加传入子节点并且移进
 // - descend, 添加value并且不移进
 // - back, 回溯到上一个可选节点
-// - break, 分解传入的节点, 移除根
 
 
 /** 一个字节一个字节的解析 */
@@ -53,5 +52,12 @@ export default {
     //         type: 'add',
     //         value: zeroOrMore.subForm
     //     }
+    // }
+
+    // rangeOf({text, pos, setPos}) {
+    //     if (pos >= text.length) throw new Error('error')
+    //     let ch = text[0]
+    //     if (ch < this._charX || ch > this._charY) throw new Error('rangeOf error')
+    //     setPos(pos + 1)
     // }
 }

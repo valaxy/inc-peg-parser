@@ -82,34 +82,34 @@ export default class ParsingNode {
     }
 
     seperateAtRoot(): ParsingNode[] {
-
+        return null
     }
 
     /** 分离叶节点并返回 */
     seperateLeafs(): ParsingNode[] {
-
+        return null
     }
 
     seperateRightRelativeNodes(): ParsingNode[] {
-
+        return null
     }
 
     remove(): ParsingNode {
-
+        return null
     }
 
     leftmost(): ParsingNode {
-
+        return null
     }
 
     rightmost(): ParsingNode {
-
+        return null
     }
 
     breakRightRelative() {
-        let node = this
         let subTrees = []
-        let previousNode = this
+        let node: ParsingNode = this
+        let previousNode: ParsingNode = this
         while (true) {
             let parent = node.parent
             if (parent) { return subTrees }
@@ -137,6 +137,6 @@ export default class ParsingNode {
     }
 
     removeChildren(): ParsingNode[] {
-
+        return null
     }
 }
