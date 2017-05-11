@@ -49,7 +49,7 @@ module.exports = {
    plugins: [
        new CheckerPlugin(),
        new CopyWebpackPlugin([
-           { from: 'lib/**/*.html',  to: '.'},
+           { context: 'lib', from: '**/*.html',  to: '.'},
        ])
    ]
 }
