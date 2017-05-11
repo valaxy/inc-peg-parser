@@ -1,16 +1,19 @@
 import Form from './form'
+import RangeOfProgress from '../parseProgress/rangeOf'
 
 export default class RangeOf extends Form {
+    get id() { return 5 }
+    
+    get charStart() { return this._charStart }
 
-    constructor(private _charX:string, private _charY:string) {
+    get charEnd() { return this._charEnd }
+
+    constructor(private _charStart: string, private _charEnd: string) {
         super()
-        if (_charX > _charY) throw new Error('charX should <= charY')
+        if (_charStart > _charEnd) throw new Error('charStart should <= charEnd')
     }
 
-    parse({text, pos, setPos}) {
-        if (pos >= text.length) throw new Error('error')
-        let ch = text[0]
-        if (ch < this._charX || ch > this._charY) throw new Error('rangeOf error')
-        setPos(pos + 1)
+    createProgress() {
+        return new RangeOfProgress(this)
     }
 }

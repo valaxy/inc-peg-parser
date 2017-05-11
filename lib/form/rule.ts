@@ -1,14 +1,16 @@
 import Form from './form'
 import RuleProgress from '../parseProgress/rule'
 
-class Rule extends Form {
+export default class Rule extends Form {
+    get id() { return 6 }
+    
     get subForm() { return this._subForm }
 
     set subForm(value) { this._subForm = value }
 
     get name() { return this._name }
 
-    constructor(private _name: string, private _subForm: Form = null) {
+    constructor(private _name: string, private _subForm: Form) {
         super()
     }
 
@@ -16,5 +18,3 @@ class Rule extends Form {
         return new RuleProgress(this)
     }
 }
-
-export default Rule

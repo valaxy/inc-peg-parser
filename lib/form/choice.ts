@@ -1,8 +1,10 @@
 import Form from './form'
 import ChoiceProgress from '../parseProgress/choice'
 
-class Choice extends Form {
+export default class Choice extends Form {
     private _subForms: Form[]
+
+    get id() { return 1 }
 
     get subForms() { return this._subForms }
 
@@ -15,5 +17,3 @@ class Choice extends Form {
         return new ChoiceProgress(this)
     }
 }
-
-export default Choice

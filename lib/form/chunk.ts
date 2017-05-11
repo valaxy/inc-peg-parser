@@ -1,7 +1,9 @@
 import Form from './form'
 import ChunkProgress from '../parseProgress/chunk'
 
-class Chunk extends Form {
+export default class Chunk extends Form {
+    get id() { return 2 }
+
     get text() { return this._text }
 
     constructor(private _text: string) {
@@ -12,5 +14,3 @@ class Chunk extends Form {
         return new ChunkProgress(this)
     }
 }
-
-export default Chunk

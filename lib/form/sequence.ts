@@ -1,9 +1,11 @@
 import Form from './form'
 import SequenceProgress from '../parseProgress/sequence'
 
-class Sequence extends Form {
+export default class Sequence extends Form {
     private _subForms
 
+    get id() { return 7 }
+    
     get subForms() { return this._subForms }
 
     constructor(...subForms: Form[]) {
@@ -15,6 +17,3 @@ class Sequence extends Form {
         return new SequenceProgress(this)
     }
 }
-
-
-export default Sequence
