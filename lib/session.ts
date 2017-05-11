@@ -1,5 +1,8 @@
 import ParsingNode from './parsingNode'
 import ParsingStack from './parsingStack'
+import Form from './form/form'
+import ParsingProvider from './parsing/parsingProvider'
+
 
 export default class Session {
     private _progressNode: ParsingNode // 标识状态
@@ -22,38 +25,62 @@ export default class Session {
         }
     }
 
-
     private _consume(progress: ParsingNode, undecided: ParsingNode) {
-        if (typeof undecided.form != 'string') { throw new Error('impossible undecided.form != "string"') }
+        if (typeof undecided.form != 'string') { throw new Error('impossible typeof undecided.form != "string"') }
         progress.add(undecided)
-        return undecided.nextUnboundNode
+        return {
+            nextProgress: progress,
+            nextUnbound: undecided.nextUnboundNode
+        }
     }
 
-    private _descend(progress: ParsingNode) {
-        progress.add(new ParsingNode(value))
+    private _descend(progress: ParsingNode, undecided: ParsingNode, generate: ParsingNode) {
+        progress.add(generate)
+        return {
+            nextProgress: generate,
+            nextUnbound: undecided
+        }
     }
 
-    private _break(node: ParsingNode) {
-        if (node.nextUnboundNode != null) { throw new Error('impossible node.nextUnboundNode != null') }
-        if (node.children.length == 0) { throw new Error('impossible node.children.length == 0') }
-        let children = node.seperateAtRoot() // now, node can gc
+    private _break(progress: ParsingNode, undecided: ParsingNode) {
+        if (undecided.children.length == 0) { throw new Error('impossible undecided.children.length == 0') }
+        let nextUnboundNode = undecided.nextUnboundNode
+        let children = undecided.children
+        undecided.seperateAtRoot() // now, undecided node can gc
         for (let i = 0; i<children.length - 1; i++) {
             children[i].nextUnboundNode = children[i + 1]
         }
-        this._progressNode.nextUnboundNode = children[0]
+        children[children.length - 1].nextUnboundNode = nextUnboundNode
+        return {
+            nextProgress: progress,
+            nextUnbound: children[0]
+        }
     }
 
     // 一旦当前form匹配失败就需要选择下一个choice
     // 若下一个choice也失败, 则需要parent选择下一个choice, 如此直到根节点
-    private _back() {
+    private _back(progress: ParsingNode, undecided: ParsingNode) {
+        if (typeof undecided.form != 'string') { throw new Error("impossible: typeof undecided.form != 'string'") }
+
         while (true) {
-            if (this._progressNode == null) {
-                return null
+            if (progress == null) {
+                return {
+                    nextProgress: null,
+                    nextUnbound: null
+                }
             }
-            if (this._progressNode.progress.nextChoice()) {
-                return
+
+            if (progress.progress.nextChoice()) {
+                if (progress.nextUnboundNode) { throw new Error("impossible: progress.nextUnboundNode exist") }
+                let provider = new ParsingProvider(progress)
+                provider.breakRootElement()
+
+                return {
+                    nextProgress: progress
+                }
             }
-            this._progressNode = this._progressNode.parent
+
+            progress = progress.parent
         }
     }
 
@@ -72,25 +99,22 @@ export default class Session {
             }
 
             // 尝试移植
-            let a = this._progressNode
-            let unboundNode = this._parsingStack.peek()
-
-            a.progress.nextStep()
-            let { type, value } = a.form.consume(b.form)
+            let unboundNode = this._progressNode.nextUnboundNode
+            this._progressNode.progress.nextStep()
+            let { type, value } = (this._progressNode.form as Form).consume(unboundNode.form)
 
             switch (type) {
                 case 'consume':
-                    this._consume(a, b)
+                    this._consume(this._progressNode, unboundNode)
                 case 'descend':
-                    this._descend(a, b)
+                    this._descend(this._progressNode, unboundNode, value)
                 case 'back':
-                    this._back()
+                    this._back(this._progressNode, unboundNode)
                 case 'break':
-                    this._break(b)
+                    this._break(this._progressNode, unboundNode)
                 default:
                     throw new Error('no update')
             }
-            if (this._graft(this._progressNode, unboundNode)) { continue }
         }
     }
 

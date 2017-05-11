@@ -2,12 +2,15 @@ import Form from './form/form'
 import ParseProgress from './form/parseProgress'
 
 export default class ParsingNode {
+    // for share use
+    _nextUnboundNode: ParsingNode = null
+
+    // for private use
     private _parent: ParsingNode
     private _children: ParsingNode[]
     private _form: Form|string
     private _progress: ParseProgress
     private _isNaming: boolean // 是否是命名节点
-    private _nextUnboundNode: ParsingNode
 
     get parent() { return this._parent }
 
@@ -102,6 +105,10 @@ export default class ParsingNode {
 
 
     getNextUnboundNode() {
-        
+
+    }
+
+    removeChildren(): ParsingNode[] {
+
     }
 }
