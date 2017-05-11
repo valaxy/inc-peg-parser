@@ -1,5 +1,5 @@
 import Form from './form/form'
-import ParseProgress from './form/parseProgress'
+import ParseProgress from './parseProgress/parseProgress'
 
 export default class ParsingNode {
     // for share use
@@ -22,7 +22,7 @@ export default class ParsingNode {
 
     get isNamed() { return this._isNaming }
 
-    get isTerminal() { return this.hasNoChildren() }
+    get isTerminal() { return this.hasNoChild() }
 
     get nextUnboundNode() { return this._nextUnboundNode }
 
@@ -44,9 +44,37 @@ export default class ParsingNode {
         }
     }
 
-    hasNoChildren() {
-        return this._children.length == 0
+    hasParent() {
+        return !!this.parent
     }
+
+    findIndex(): number {
+        let children = this.parent.children
+        for (let i=0; i<children.length; i++) {
+            if (children[i] == this) { return i }
+        }
+    }
+
+    hasChild() {
+        return this.children.length > 0
+    }
+
+    hasNoChild() {
+        return !this.hasChild()
+    }
+
+    isFirstChild() {
+        return this.parent.children[0] == this
+    }
+
+    firstChild(): ParsingNode {
+        return this.children[0]
+    }
+
+    lastChild(): ParsingNode {
+        return this.children[this.children.length - 1]
+    }
+
 
     seperateDescendants() {
         this._children.forEach(child => child._parent = null)

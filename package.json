@@ -3,10 +3,12 @@
   "version": "0.0.0-dev",
   "scripts": {
     "watch": "tsc --watch -p tsconfig.json",
-    "test": "mocha dest/test/index.js"
+    "test": "mocha --require source-map-support/register dest/test/index.js"
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "mocha": "^3.3.0",
+    "source-map-support": "^0.4.15",
     "typescript": "^2.3.2"
   }
 }
