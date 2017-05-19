@@ -13,6 +13,8 @@
     "css-loader": "^0.28.1",
     "mocha": "^3.3.0",
     "node-sass": "^4.5.2",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "sass-loader": "^6.0.5",
     "sigma": "^1.2.0",
     "source-map-support": "^0.4.15",

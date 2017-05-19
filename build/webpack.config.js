@@ -5,7 +5,7 @@ const { CheckerPlugin } = require('awesome-typescript-loader')
 module.exports = {
     context: path.join(__dirname, '../'),
     entry: {
-        './debug/index.js': './lib/debug/index.ts'
+        './debug/index.js': './lib/debug/index.tsx'
     },
     output: {
         filename: '[name]',

@@ -47,18 +47,18 @@ const calcPosition = function(node: ExtendParsingNode, nodes: ParsingNode[], dee
     if (node.hasChild()) {
         let leftChildPosition = calcPosition(node.firstChild() as ExtendParsingNode, nodes, deep + 1)
         let rightChildPosition = calcPosition(node.lastChild() as ExtendParsingNode, nodes, deep + 1)
-        position = NodePosition.parentInMiddle(leftChildPosition, rightChildPosition, deep)
+        position = NodePosition.parentInMiddle(leftChildPosition, rightChildPosition, deep, node)
         // console.log(node.form, leftChildPosition.toArray(), rightChildPosition.toArray(), position.toArray())
     } else if (node.hasParent()) { // no child && has parent
         let leftNode = getLeftNode(node) as ExtendParsingNode
         if (leftNode) {
             let leftNodePosition = calcPosition(leftNode, nodes, deep)
-            position = NodePosition.right(leftNodePosition, deep)
+            position = NodePosition.right(leftNodePosition, deep, node)
         } else {
-            position = NodePosition.random(deep)
+            position = NodePosition.random(deep, node)
         }
     } else { // no child && no parent (ralely happen)
-        position = NodePosition.random(deep)
+        position = NodePosition.random(deep, node)
     }
 
     node._position = position

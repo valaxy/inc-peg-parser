@@ -4,7 +4,8 @@
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": true,
-        "outDir": "dest/"
+        "outDir": "dest/",
+        "jsx": "React"
     },
     "include": [
         "build/typings/",
