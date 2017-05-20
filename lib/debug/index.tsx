@@ -3,6 +3,7 @@ import ReactDom = require('react-dom')
 import sigma = require('sigma')
 import drawParsingTree from './drawParsingTree'
 import ParsingNode from '../parsingNode'
+import leftAlignNarrowDraw from '../draw/leftAlignNarrowDraw'
 require('./index.scss')
 
 const createNode = function(symbol = '@', children = []) {
@@ -21,31 +22,34 @@ class Main extends React.Component {
             createNode('b'),
             createNode('c', [
                 createNode('d'),
-                createNode('e')
+                createNode('e'),
+                createNode('f')
             ]),
-            createNode('f')
+            createNode('g'),
+            createNode('f', [
+                createNode('h'),
+                createNode('i')
+            ])
         ])
 
-        let positions = drawParsingTree(root)
-        positions.forEach((node) => {
-            let position = node._position
+        let infos = leftAlignNarrowDraw(root)
+        infos.forEach((info) => {
             container.graph.addNode({
-                id: `n${position.index}`,
-                label: position.index,
-                x: position.root,
-                y: position.deep,
+                id: `n${info.id}`,
+                label: info.parentID,
+                x: info.x,
+                y: info.y,
                 size: 1,
                 color: '#f00'
             })
         })
 
-        positions.forEach((node, index) => {
-            let position = node._position
-            if (position.parentIndex !== null) {
+        infos.forEach((info, index) => {
+            if (info.parentID !== null) {
                 container.graph.addEdge({
                     id: `e${index}`,
-                    source: `n${position.parentIndex}`,
-                    target: `n${position.index}`
+                    source: `n${info.parentID}`,
+                    target: `n${info.id}`
                 })
            }
         })
