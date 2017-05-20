@@ -57,6 +57,7 @@ const calcPosition = function(node: ExtendParsingNode, nodes: ParsingNode[], dee
         } else {
             position = NodePosition.random(deep, node)
         }
+        // console.log(node.form, leftNode && leftNode.form, position.toArray())
     } else { // no child && no parent (ralely happen)
         position = NodePosition.random(deep, node)
     }

@@ -86,4 +86,46 @@ describe('drawParsingTree', function() {
             [2, 2, 2, 1]
         ])
     })
+
+    it ('case4', function() {
+        let root = createNode('a', [
+            createNode('b'),
+            createNode('c', [
+                createNode('d'),
+                createNode('e')
+            ]),
+            createNode('f')
+        ])
+        assert.equal(drawParsingTree(root).length, 6)
+        assert.deepEqual(preorder(root, []), [
+            [1, 0, 3, 0],
+            [0, 0, 0, 1],
+            [1, 1, 2, 1],
+            [1, 1, 1, 2],
+            [2, 2, 2, 2],
+            [3, 3, 3, 1]
+        ])
+    })
+
+    it ('case5', function() {
+        let root = createNode('a', [
+            createNode('b'),
+            createNode('c', [
+                createNode('d'),
+                createNode('e'),
+                createNode('f')
+            ]),
+            createNode('g')
+        ])
+        assert.equal(drawParsingTree(root).length, 7)
+        assert.deepEqual(preorder(root, []), [
+            [2, 0, 4, 0],
+            [0, 0, 0, 1],
+            [2, 1, 3, 1],
+            [1, 1, 1, 2],
+            [2, 2, 2, 2],
+            [3, 3, 3, 2],
+            [4, 4, 4, 1]
+        ])
+    })
 })

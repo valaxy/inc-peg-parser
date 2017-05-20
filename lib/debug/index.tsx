@@ -21,10 +21,9 @@ class Main extends React.Component {
             createNode('b'),
             createNode('c', [
                 createNode('d'),
-                createNode('dd'),
-                createNode('ddx')
+                createNode('e')
             ]),
-            createNode('e')
+            createNode('f')
         ])
 
         let positions = drawParsingTree(root)

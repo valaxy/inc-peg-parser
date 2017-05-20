@@ -24,7 +24,7 @@ export default class NodePosition {
 
     get parentIndex() {
         if (this._node.parent) {
-            return this._node.parent._position.index            
+            return this._node.parent._position.index
         } else {
             return null
         }
@@ -48,7 +48,7 @@ export default class NodePosition {
     }
 
     static right(left: NodePosition, deep: number, node?) {
-        return new NodePosition(left._left + 1, left._left + 1, left._left + 1, deep, node)
+        return new NodePosition(left._right + 1, left._right + 1, left._right + 1, deep, node)
     }
 
     static random(deep: number, node) {
