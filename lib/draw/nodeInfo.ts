@@ -1,10 +1,10 @@
 let index = 0
 
 export default class NodeInfo {
-    private _parentID: Number
-    private _id: Number
-    private _x: Number
-    private _y: Number
+    private _parentID: number
+    private _id: number
+    private _x: number
+    private _y: number
 
     get id() { return this._id }
 
@@ -14,7 +14,10 @@ export default class NodeInfo {
 
     get y() { return this._y }
 
-    constructor(id: Number, parentID: Number, x: Number, y: Number) {
+
+    set x(v) { this._x = v }
+
+    constructor(id: number, parentID: number, x: number, y: number) {
         this._id = id
         this._parentID = parentID
         this._x = x

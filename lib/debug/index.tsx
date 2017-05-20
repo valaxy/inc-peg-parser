@@ -1,9 +1,9 @@
 import React = require('react')
 import ReactDom = require('react-dom')
 import sigma = require('sigma')
-import drawParsingTree from './drawParsingTree'
 import ParsingNode from '../parsingNode'
 import leftAlignNarrowDraw from '../draw/leftAlignNarrowDraw'
+import centerAlignNarrowDraw from '../draw/centerAlignNarrowDraw'
 require('./index.scss')
 
 const createNode = function(symbol = '@', children = []) {
@@ -32,7 +32,7 @@ class Main extends React.Component {
             ])
         ])
 
-        let infos = leftAlignNarrowDraw(root)
+        let infos = centerAlignNarrowDraw(root)
         infos.forEach((info) => {
             container.graph.addNode({
                 id: `n${info.id}`,
