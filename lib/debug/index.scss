@@ -1,11 +1,20 @@
-html, body, .everything {
+html, body, .everything, .main {
     height: 100%;
     padding: 0;
     margin: 0;
 }
 
-.everything {
+.main {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+
+    .sidebar {
+        flex: 0 0 10rem;
+    }
+
     .canvas {
-        height: 100%;
+        flex: 1;
     }
 }

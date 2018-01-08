@@ -1,0 +1,18 @@
+@charset "utf-8";
+
+.sidebar {
+    border-right: 1px solid #ccc;
+
+    .buttonList {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+
+        button {
+            flex: 1;
+            height: 3rem;
+            font-size: 1.7rem;
+            cursor: pointer;
+        }
+    }
+}

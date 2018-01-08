@@ -4,7 +4,8 @@ import sigma = require('sigma')
 import ParsingNode from '../parsingNode'
 import leftAlignNarrowDraw from '../draw/leftAlignNarrowDraw'
 import centerAlignNarrowDraw from '../draw/centerAlignNarrowDraw'
-require('./index.scss')
+import Sidebar from './sidebar/index'
+import './index.scss'
 
 const createNode = function(symbol = '@', children = []) {
     let node: any = new ParsingNode(symbol, false)
@@ -59,7 +60,10 @@ class Main extends React.Component {
 
     render() {
         return (
-            <div className="canvas" ref={_ => this._container = _}>
+            <div className="main">
+                <Sidebar />
+                <div className="canvas" ref={_ => this._container = _}>
+                </div>
             </div>
         )
     }
