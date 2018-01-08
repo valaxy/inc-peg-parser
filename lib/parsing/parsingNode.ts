@@ -1,5 +1,6 @@
-import Form from './form/form'
-import ParseProgress from './parseProgress/parseProgress'
+import Form from '../form/form'
+import ParseProgress from '../parseProgress/parseProgress'
+
 
 export default class ParsingNode {
     // 指向下一个游离节点
@@ -20,6 +21,8 @@ export default class ParsingNode {
     get progress() { return this._progress }
 
     get isNamed() { return this._isNaming }
+
+    get character() { return this._form as string }
 
     get isTerminal() { return this.hasNoChild() }
 
@@ -128,11 +131,6 @@ export default class ParsingNode {
     add(otherNode) {
         otherNode._parent = this
         this._children.push(otherNode)
-    }
-
-
-    getNextUnboundNode() {
-
     }
 
     removeChildren(): ParsingNode[] {

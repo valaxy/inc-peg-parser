@@ -1,6 +1,5 @@
-import Session from '../session'
 import Form from '../form/form'
-import ParsingNode from '../parsingNode'
+import ParsingNode from '../parsing/parsingNode'
 
 /** 标识一个节点的解析进程 */
 abstract class ParseProgress {
@@ -12,6 +11,9 @@ abstract class ParseProgress {
 
     /** 判断是否有下一个step */
     abstract hasNextStep(): boolean
+
+
+    abstract take(ch: string): { }
 }
 
 export default ParseProgress

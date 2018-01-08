@@ -1,55 +1,73 @@
 import ParsingNode from './parsingNode'
-import Form from './form/form'
-import * from './form/index'
-import ParsingProvider from './parsing/parsingProvider'
-import VerbatimParsing from './parsing/verbatimParsing'
+import Form from '../form/form'
+import ParsingProvider from './parsingProvider'
+import * as p from '../parseProgress/index'
+import { ParsingDirective, ParsingDirectiveReturn } from './parsing'
 
-// 术语：
+
+// 术语解释：
 // - 流浪指针(vagrant pointer)：指向最先的未被并入结构的节点
 // - 连接指针(connective pointer): 指向最后的结构化的节点
 // - 固定树:
 // - 泛型: Form
+// - 移进：解析下一个字符
+// - 保持：仍然解析当前字符
+// - 绑定：将字符绑定到节点
 
 export default class Session {
     private _startNode: ParsingNode
     private _endNode: ParsingNode
-    private _parsing: VerbatimParsing = VerbatimParsing
+
+    constructor(private _parsing: ParsingDirective) { }
 
     //=====================================================================================
     // 主要指令
     //=====================================================================================
 
+    // 创建父子关系，移进流浪指针
     private _consume(connective: ParsingNode, vagrant: ParsingNode) {
         if (typeof vagrant.form != 'string') { throw new Error('impossible typeof vagrant.form != "string"') }
         connective.add(vagrant) // 添加子节点
         return {
-            nextConnectiveNode: connective, // 仍有可能未终结
-            nextVagrantNode: vagrant.nextVagrantNode // 移进
+            nextConnectiveNode: connective,          // 当前连接节点仍有可能继续链接子节点
+            nextVagrantNode: vagrant.nextVagrantNode // 当前游离节点已经处理完了，切换到下一个
         }
     }
 
+    // 创建父子关系，保持流浪指针
     private _descend(connective: ParsingNode, vagrant: ParsingNode, generate: ParsingNode) {
         connective.add(generate)
         return {
-            nextConnectiveNode: generate, // 推进到子节点
-            nextVagrantNode: vagrant
+            nextConnectiveNode: generate, // 关注点放到子节点
+            nextVagrantNode: vagrant      // 游离节点不变
         }
     }
 
-    // private _break(connective: ParsingNode, vagrant: ParsingNode) {
-    //     if (vagrant.children.length == 0) { throw new Error('impossible undecided.children.length == 0') }
-    //     let nextUnboundNode = vagrant.nextVagrantNode
-    //     let children = vagrant.children
-    //     vagrant.seperateAtRoot() // now, undecided node can gc
-    //     for (let i = 0; i<children.length - 1; i++) {
-    //         children[i].nextVagrantNode = children[i + 1]
-    //     }
-    //     children[children.length - 1].nextVagrantNode = nextUnboundNode
-    //     return {
-    //         nextConnectiveNode: connective,
-    //         nextVagrantNode: children[0]
-    //     }
-    // }
+    // 移除当前流浪节点，并重新组织流浪节点关系
+    private _break(connective: ParsingNode, vagrant: ParsingNode) {
+        if (vagrant.children.length == 0) { throw new Error('impossible vagrant.children.length == 0') } // TODO 应该支持children为空的情况??
+
+        // 保留下一个流浪节点，因为打散当前流浪节点结构之后，需要重新组织节点关系
+        let nextVagrant = vagrant.nextVagrantNode
+
+        // 保留子节点，打散之后需要重新组织关系
+        let children = vagrant.children
+
+        // 移除当前流浪节点，该节点可以gc了
+        vagrant.seperateAtRoot()
+
+        // 重新组织链表关系
+        for (let i = 0; i<children.length - 1; i++) {
+            children[i].nextVagrantNode = children[i + 1]
+        }
+        children[children.length - 1].nextVagrantNode = nextVagrant
+
+        return {
+            nextConnectiveNode: connective, // 连接节点不变
+            nextVagrantNode: children[0]    // 由流浪节点的第一个子节点作为新的流浪节点
+        }
+    }
+
 
     // 一旦当前form匹配失败就需要选择下一个choice
     // 若下一个choice也失败, 则需要parent选择下一个choice, 如此直到根节点
@@ -85,15 +103,22 @@ export default class Session {
     //=====================================================================================
     // 主要操作
     //=====================================================================================
-    private _parse(connectiveForm: Form, vagrantForm: Form): any {
-        if (connectiveForm instanceof Chunk) {
-            this._parsing.chunk(connectiveForm, vagrantForm) // in fact is a string
-        } else if (connectiveForm instanceof Sequence) {
-            this._parsing.chunk(sequence, vagrantForm) // in fact is a string
+    private _parse(connective: p.ParseProgress, vagrant: ParsingNode): ParsingDirectiveReturn {
+        let name
+        if (connective instanceof p.ChunkProgress) {
+            name = 'chunk'
+        } else if (connective instanceof p.SequenceProgress) {
+            name = 'sequence'
+        } else if (connective instanceof p.ChoiceProgress) {
+            name = 'choice'
+        } else if (connective instanceof p.RuleProgress) {
+            name = 'rule'
         } else {
-            console.error(connectiveForm)
-            throw new Error(`do not support connectiveForm`)
+            console.error(connective)
+            throw new Error(`do not support this typeof connective`)
         }
+
+        return this._parsing[name](connective, vagrant)
     }
 
     private _findConnectiveNode(node: ParsingNode) {
@@ -122,21 +147,29 @@ export default class Session {
             connectiveNode.progress.nextStep()
 
             // 比较连接节点和流浪节点的泛型即可确定指令
-            let { type, value } = this._parse(connectiveNode.form as Form, vagrantNode.form)
+            let { type, value } = this._parse(connectiveNode.progress, vagrantNode)
 
             // 按指令进行操作
+            let result
             switch (type) {
                 case 'consume':
-                    this._consume(connectiveNode, vagrantNode)
+                    result = this._consume(connectiveNode, vagrantNode)
+                    break
                 case 'descend':
-                    this._descend(connectiveNode, vagrantNode, value)
+                    result = this._descend(connectiveNode, vagrantNode, value)
+                    break
                 case 'back':
-                    this._back(connectiveNode, vagrantNode)
+                    result = this._back(connectiveNode, vagrantNode)
+                    break
                 case 'break':
-                    this._break(connectiveNode, vagrantNode)
+                    result = this._break(connectiveNode, vagrantNode)
+                    break
                 default:
                     throw new Error(`do not support type=${type}`)
             }
+
+            connectiveNode = result.connectiveNode
+            vagrantNode = result.vagrantNode
         }
     }
 
