@@ -2,10 +2,9 @@ import Form from './form/form'
 import ParseProgress from './parseProgress/parseProgress'
 
 export default class ParsingNode {
-    // for share use
-    _nextUnboundNode: ParsingNode = null
-
-    // for private use
+    // 指向下一个游离节点
+    // 各个游离节点通过该属性组成一个链表结构
+    private _nextVagrantNode: ParsingNode = null
     private _parent: ParsingNode
     private _children: ParsingNode[]
     private _form: Form|string
@@ -24,9 +23,9 @@ export default class ParsingNode {
 
     get isTerminal() { return this.hasNoChild() }
 
-    get nextUnboundNode() { return this._nextUnboundNode }
+    get nextVagrantNode() { return this._nextVagrantNode }
 
-    set nextUnboundNode(node) { this._nextUnboundNode = node }
+    set nextVagrantNode(node) { this._nextVagrantNode = node }
 
     // constructor('a')
     // constructor(new Form)
@@ -118,7 +117,7 @@ export default class ParsingNode {
             for (let i=index+1; i<parent.children.length; i++) {
                 let nextTreeRoot = parent.children[i].remove()
                 subTrees.push(nextTreeRoot)
-                previousNode.nextUnboundNode = nextTreeRoot // TODO 这里如果有算法可以把unboundNode绑定到非终结节点上, 也许可以提高速度
+                previousNode.nextVagrantNode = nextTreeRoot // TODO 这里如果有算法可以把unboundNode绑定到非终结节点上, 也许可以提高速度
                 previousNode = nextTreeRoot.rightmost()
             }
             node = parent
