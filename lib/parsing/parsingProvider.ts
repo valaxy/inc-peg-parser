@@ -10,25 +10,25 @@ export default class ParsingProvider {
 
     private _break(node: ParsingNode) {
         let children = node.removeChildren()
-        children[children.length - 1]._nextUnboundNode = node._nextUnboundNode
+        children[children.length - 1]._nextVagrantNode = node._nextVagrantNode
         for (let i = 0; i<children.length - 1; i++) {
-            children[i]._nextUnboundNode = children[i + 1]
+            children[i]._nextVagrantNode = children[i + 1]
         }
-        this._node._nextUnboundNode = children[0]
+        this._node._nextVagrantNode = children[0]
     }
 
     isEmpty() {
-        return this._node._nextUnboundNode === null
+        return this._node._nextVagrantNode === null
     }
 
     pop(): ParsingNode {
-        let top = this._node._nextUnboundNode
-        this._node._nextUnboundNode = top._nextUnboundNode
+        let top = this._node._nextVagrantNode
+        this._node._nextVagrantNode = top._nextVagrantNode
         return top
     }
 
     peek(): ParsingNode {
-        return this._node._nextUnboundNode
+        return this._node._nextVagrantNode
     }
 
     breakdownTopTree() {
