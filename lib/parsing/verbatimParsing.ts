@@ -1,19 +1,16 @@
-import { ChunkProgress, SequenceProgress, ChoiceProgress, RuleProgress } from '../parseProgress/index'
+import { ParsingDirective } from './parsing'
+import ParsingNode from './parsingNode'
+import * as p from '../parseProgress/index'
 
 /**
  * 提供逐字节的核心解析算法，通过计算可能返回以下解析指令：
- * - consume：创建子节点、绑定该子节点、移进
- * - descend：创建子节点、保持
- * - back：回溯到上一个可选节点
  *
- * 术语解释：
- * - 移进：解析下一个字符
- * - 保持：仍然解析当前字符
- * - 绑定：将字符绑定到节点
  */
-export default {
-    chunk(chunk: ChunkProgress, ch: string) {
-        if (chunk.currentCharacter == ch) {
+const PARSING: ParsingDirective = {
+    chunk(chunk: p.ChunkProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
+        if (chunk.currentCharacter == vagrant.character) {
             return {
                 type: 'consume'
             }
@@ -24,21 +21,27 @@ export default {
         }
     },
 
-    sequence(sequence: SequenceProgress, ch: string) {
+    sequence(sequence: p.SequenceProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
         return {
             type: 'descend',
             value: sequence.currentSubForm // a form
         }
     },
 
-    choice(choice: ChoiceProgress, ch: string) {
+    choice(choice: p.ChoiceProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
         return {
             type: 'descend',
             value: choice.currentSubForm
         }
     },
 
-    rule(rule: RuleProgress, ch: string) {
+    rule(rule: p.RuleProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
         return {
             type: 'descend',
             value: rule.subForm
@@ -65,3 +68,5 @@ export default {
     //     setPos(pos + 1)
     // }
 }
+
+export default PARSING
