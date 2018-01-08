@@ -5,7 +5,10 @@
         "noImplicitAny": false,
         "sourceMap": true,
         "outDir": "dest/",
-        "jsx": "React"
+        "jsx": "React",
+        "types": [
+            "node"
+         ]
     },
     "include": [
         "build/typings/",

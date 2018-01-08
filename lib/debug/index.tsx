@@ -59,7 +59,12 @@ class Main extends React.Component {
 
     render() {
         return (
-            <div className="canvas" ref={_ => this._container = _}>
+            <div className="main">
+                <div className="left">
+                    调试工具
+                </div>
+                <div className="canvas" ref={_ => this._container = _}>
+                </div>
             </div>
         )
     }
