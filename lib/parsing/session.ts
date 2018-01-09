@@ -39,7 +39,7 @@ export default class Session {
         connective.add(generate)
         return {
             nextConnectiveNode: generate, // 关注点放到子节点
-            nextVagrantNode: null         // 流浪节点不变
+            nextVagrantNode: undefined    // 流浪节点不变
         }
     }
 
@@ -88,8 +88,8 @@ export default class Session {
                 provider.breakdownMainTree()
 
                 return {
-                    nextConnectiveNode: connective,
-                    nextVagrantNode: null
+                    nextConnectiveNode: connective, // 连接节点不变
+                    nextVagrantNode: undefined      // 流浪节点不变
                 }
             }
 
@@ -147,11 +147,11 @@ export default class Session {
             // 要找到固定树的最后一个连接节点
             let bakup = connectiveNode
             connectiveNode = this._findConnectiveNode(connectiveNode)
-            console.log(connectiveNode, 3)
 
             // 解析完毕(利用结尾哨兵保证此时一定是解析完毕状态)
             // assertTrue(this._parsingStack.isEmpty())
             if (!connectiveNode) { return bakup } // 正常返回最后一个处理过的
+            if (!vagrantNode) { return connectiveNode }
 
             // 进行该规则的下一步，流浪节点将根据该规则进行计算
             connectiveNode.progress.nextStep()
@@ -186,7 +186,7 @@ export default class Session {
 
             connectiveNode = result.nextConnectiveNode
 
-            if (result.nextVagrantNode) {
+            if (result.nextVagrantNode !== undefined) {
                 vagrantNode = result.nextVagrantNode
             }
         }

@@ -81,7 +81,7 @@ class Main extends React.Component {
     render() {
         return (
             <div className="main">
-                <Sidebar parseText={"abc"} next={this._handleNext.bind(this)} />
+                <Sidebar parseText={TEXT} next={this._handleNext.bind(this)} />
                 <div className="canvas" ref={_ => this._container = _}>
                 </div>
             </div>
