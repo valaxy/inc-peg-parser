@@ -137,4 +137,15 @@ export default class ParsingNode {
     removeChildren(): ParsingNode[] {
         return null
     }
+
+    toName() {
+        return this.isTerminal ? this.character : this.form.constructor.name
+    }
+
+    toIndentString(indent=0) {
+        let name = this.toName()
+        let head = `${new Array(indent*4+1).join(' ')}${name}`
+        let text = this.children.map(child => child.toIndentString(indent + 1) + '\n')
+        return head + '\n' + text
+    }
 }

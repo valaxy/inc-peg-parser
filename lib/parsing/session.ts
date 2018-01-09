@@ -39,7 +39,7 @@ export default class Session {
         connective.add(generate)
         return {
             nextConnectiveNode: generate, // 关注点放到子节点
-            nextVagrantNode: vagrant      // 流浪节点不变
+            nextVagrantNode: null         // 流浪节点不变
         }
     }
 
@@ -77,7 +77,7 @@ export default class Session {
         while (true) {
             if (connective == null) {
                 return {
-                    nextConnectiveNode: null,
+                    nextConnectiveNode: null, // 所有方案全部失败了
                     nextVagrantNode: null
                 }
             }
@@ -113,6 +113,12 @@ export default class Session {
             name = 'choice'
         } else if (connective instanceof p.RuleProgress) {
             name = 'rule'
+        } else if (connective instanceof p.OneOrMoreProgress) {
+            name = 'oneOrMore'
+        } else if (connective instanceof p.ZeorOrMoreProgress) {
+            name = 'zeroOrMore'
+        } else if (connective instanceof p.RangeOfProgress) {
+            name = 'rangeOf'
         } else {
             console.error(connective)
             throw new Error(`do not support this typeof connective`)
@@ -132,22 +138,27 @@ export default class Session {
     }
 
     private _maintainAt(connectiveNode: ParsingNode) {
+        if (!connectiveNode) { throw new Error(`connectiveNode should not be null`) }
+
+        // 找到最近的第一个流浪节点，一定刚好就是nextVagrantNode
+        let vagrantNode = connectiveNode.nextVagrantNode
+
         while (true) {
             // 要找到固定树的最后一个连接节点
+            let bakup = connectiveNode
             connectiveNode = this._findConnectiveNode(connectiveNode)
+            console.log(connectiveNode, 3)
 
             // 解析完毕(利用结尾哨兵保证此时一定是解析完毕状态)
             // assertTrue(this._parsingStack.isEmpty())
-            if (!connectiveNode) { return }
-
-            // 找到最近的第一个流浪节点，一定刚好就是nextVagrantNode
-            let vagrantNode = connectiveNode.nextVagrantNode
+            if (!connectiveNode) { return bakup } // 正常返回最后一个处理过的
 
             // 进行该规则的下一步，流浪节点将根据该规则进行计算
             connectiveNode.progress.nextStep()
 
             // 比较连接节点和流浪节点的泛型即可确定指令
             let { type, value } = this._parse(connectiveNode.progress, vagrantNode)
+            console.info(`type: ${type}`)
 
             // 按指令进行操作
             let result
@@ -168,8 +179,16 @@ export default class Session {
                     throw new Error(`do not support type=${type}`)
             }
 
-            connectiveNode = result.connectiveNode
-            vagrantNode = result.vagrantNode
+            // 所有方案全部失败
+            if (!result.nextConnectiveNode) {
+                return null // 失败返回
+            }
+
+            connectiveNode = result.nextConnectiveNode
+
+            if (result.nextVagrantNode) {
+                vagrantNode = result.nextVagrantNode
+            }
         }
     }
 
@@ -183,10 +202,14 @@ export default class Session {
             end.nextVagrantNode = target.nextVagrantNode
             target.nextVagrantNode = start
         } else {
-            target.breakRightRelative()
+            target.nextVagrantNode = start
+            // target.breakRightRelative()
         }
 
-        this._maintainAt(target)
+        console.log(target.nextVagrantNode.toName())
+        let nextConnectiveNode = this._maintainAt(target)
+        target.nextVagrantNode = null
+        return nextConnectiveNode
     }
 }
 

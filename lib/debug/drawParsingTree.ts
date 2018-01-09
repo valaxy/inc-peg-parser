@@ -1,4 +1,4 @@
-import ParsingNode from '../parsingNode'
+import ParsingNode from '../parsing/parsingNode'
 import NodePosition from './nodePosition'
 
 interface ExtendParsingNode extends ParsingNode {
@@ -7,7 +7,7 @@ interface ExtendParsingNode extends ParsingNode {
 
 const findRightmost = function(root: ParsingNode, maxDeep: number) {
     for (let i=0; i<maxDeep; i++) {
-        if (root.hasChild()) {
+        if (root.hasChild) {
             root = root.lastChild()
         } else {
             return root
@@ -32,7 +32,7 @@ const getLeftNode = function(node: ParsingNode): ParsingNode {
 
         node = node.parent
         offset += 1
-        if (!node.hasParent()) {
+        if (!node.hasParent) {
             return null
         }
     }
@@ -44,12 +44,12 @@ const calcPosition = function(node: ExtendParsingNode, nodes: ParsingNode[], dee
     }
 
     let position
-    if (node.hasChild()) {
+    if (node.hasChild) {
         let leftChildPosition = calcPosition(node.firstChild() as ExtendParsingNode, nodes, deep + 1)
         let rightChildPosition = calcPosition(node.lastChild() as ExtendParsingNode, nodes, deep + 1)
         position = NodePosition.parentInMiddle(leftChildPosition, rightChildPosition, deep, node)
         // console.log(node.form, leftChildPosition.toArray(), rightChildPosition.toArray(), position.toArray())
-    } else if (node.hasParent()) { // no child && has parent
+    } else if (node.hasParent) { // no child && has parent
         let leftNode = getLeftNode(node) as ExtendParsingNode
         if (leftNode) {
             let leftNodePosition = calcPosition(leftNode, nodes, deep)

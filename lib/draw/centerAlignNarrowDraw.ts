@@ -1,4 +1,4 @@
-import ParsingNode from '../parsingNode'
+import ParsingNode from '../parsing/parsingNode'
 import NodeInfo from './nodeInfo'
 
 let indexCounter = 0
@@ -39,6 +39,8 @@ const getNext = function(next: number[], deep: number) {
     return next[deep] += 1
 }
 
+/** 紧凑的居中绘制 */
+
 // 先序遍历
 export default function(root: ParsingNode): NodeInfo[] {
     let current = root as ExtendParsingNode
@@ -47,7 +49,7 @@ export default function(root: ParsingNode): NodeInfo[] {
     assignData(current, 0)
     while (current) {
         if (current.status == -1) { // -1表示处理自己
-            current.info = new NodeInfo(getIndex(current), getIndex(current.parent), getNext(next, current.deep), current.deep)
+            current.info = new NodeInfo(getIndex(current), getIndex(current.parent), getNext(next, current.deep), current.deep, current.toName())
             nodeInfos.push(current.info)
             current.children.forEach(child => {
                 assignData(child, current.deep + 1)

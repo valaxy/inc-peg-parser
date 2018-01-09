@@ -1,4 +1,4 @@
-import ParsingNode from '../parsingNode'
+import ParsingNode from '../parsing/parsingNode'
 
 export default class Character {
     private _next: Character

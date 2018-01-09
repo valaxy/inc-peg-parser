@@ -4,11 +4,6 @@ import * as p from '../parseProgress/index'
 import verbatimParsing from './verbatimParsing'
 
 const PARSING: ParsingDirective = {
-    chunk(connective: p.ChunkProgress, vagrant: ParsingNode) {
-        // vagrant应该总是terminal节点
-        return verbatimParsing.chunk(connective, vagrant)
-    },
-
     sequence(connective: p.SequenceProgress, vagrant: ParsingNode) {
         if (vagrant.isTerminal) {
             return verbatimParsing.sequence(connective, vagrant)
@@ -63,6 +58,31 @@ const PARSING: ParsingDirective = {
         // 无法合并
         return {
             type: 'break'
+        }
+    },
+
+    oneOrMore(oneOrMore: p.OneOrMoreProgress, vagrant: ParsingNode) {
+        return {
+            type: 'back'
+        }
+    },
+
+    zeroOrMore(zeroOrMore: p.ZeorOrMoreProgress, vagrant: ParsingNode) {
+        return {
+            type: 'back'
+        }
+    },
+
+
+
+    chunk(connective: p.ChunkProgress, vagrant: ParsingNode) {
+        // vagrant应该总是terminal节点
+        return verbatimParsing.chunk(connective, vagrant)
+    },
+    
+    rangeOf(rangeOf: p.RangeOfProgress, vagrant: ParsingNode) {
+        return {
+            type: 'back'
         }
     }
 }

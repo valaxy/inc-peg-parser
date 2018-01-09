@@ -1,5 +1,5 @@
 import drawParsingTree from '../lib/debug/drawParsingTree'
-import ParsingNode from '../lib/parsingNode'
+import ParsingNode from '../lib/parsing/parsingNode'
 import NodePosition from '../lib/debug/nodePosition'
 const assert = require('chai').assert
 
@@ -8,7 +8,7 @@ interface ExtendParsingNode extends ParsingNode {
 }
 
 const createNode = function(symbol = '@', children = []) {
-    let node: any = new ParsingNode(symbol, false)
+    let node: any = new ParsingNode(symbol)
     node._children = children
     children.forEach(child => child._parent = node)
     return node

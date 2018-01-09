@@ -1,5 +1,5 @@
 import Character from './character'
-import Parser from '../session'
+import Parser from '../parsing/session'
 
 export default class Editor {
     private _parser: Parser

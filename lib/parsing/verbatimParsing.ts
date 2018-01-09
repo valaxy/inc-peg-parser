@@ -11,7 +11,7 @@ const PARSING: ParsingDirective = {
 
         return {
             type: 'descend',
-            value: sequence.currentSubForm
+            value: new ParsingNode(sequence.currentSubForm)
         }
     },
 
@@ -20,7 +20,7 @@ const PARSING: ParsingDirective = {
 
         return {
             type: 'descend',
-            value: choice.currentSubForm
+            value: new ParsingNode(choice.currentSubForm)
         }
     },
 
@@ -29,7 +29,7 @@ const PARSING: ParsingDirective = {
 
         return {
             type: 'descend',
-            value: rule.subForm
+            value: new ParsingNode(rule.subForm)
         }
     },
 
@@ -38,8 +38,8 @@ const PARSING: ParsingDirective = {
 
         // 这里不对匹配与否做具体判断，交由下层去判断
         return {
-            type: 'decent',
-            value: oneOrMore.form
+            type: 'descend',
+            value: new ParsingNode(oneOrMore.form.subForm) // 循环子Form
         }
     },
 
@@ -48,8 +48,8 @@ const PARSING: ParsingDirective = {
 
         // 这里不对匹配与否做具体判断，交由下层去判断
         return {
-            type: 'decent',
-            value: zeroOrMore.form
+            type: 'descend',
+            value: new ParsingNode(zeroOrMore.form)
         }
     },
 

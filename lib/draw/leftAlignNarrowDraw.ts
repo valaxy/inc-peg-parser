@@ -1,4 +1,4 @@
-import ParsingNode from '../parsingNode'
+import ParsingNode from '../parsing/parsingNode'
 import NodeInfo from './nodeInfo'
 
 let indexCounter = 0

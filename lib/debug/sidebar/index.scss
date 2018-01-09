@@ -15,4 +15,14 @@
             cursor: pointer;
         }
     }
+
+    .parseText {
+        margin: 1rem;
+
+        span {
+            &[data-cursor="true"] {
+                color: red;
+            }
+        }
+    }
 }
