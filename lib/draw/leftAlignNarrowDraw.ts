@@ -45,7 +45,7 @@ export default function(root: ParsingNode): NodeInfo[] {
     assignData(current, 0)
     while (current) {
         if (current.status == -1) { // -1表示处理自己
-            nodeInfos.push(new NodeInfo(getIndex(current), getIndex(current.parent), getNext(next, current.deep), current.deep))
+            nodeInfos.push(new NodeInfo(getIndex(current), getIndex(current.parent), getNext(next, current.deep), current.deep, current.toName()))
             current.children.forEach(child => {
                 assignData(child, current.deep + 1)
             })

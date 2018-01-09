@@ -10,7 +10,7 @@ import Sequence from './sequence'
 import ZeroOrMore from './zeroOrMore'
 
 const anyOf = (x) => new AnyOf(x)
-const choice = (x) => new Choice(x)
+const choice = (...x) => new Choice(...x)
 const chunk = (x) => new Chunk(x)
 const oneOrMore = (x) => new OneOrMore(x)
 const optional = (x) => new Optional(x)

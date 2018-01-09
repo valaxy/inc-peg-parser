@@ -5,7 +5,7 @@
     "watch": "tsc --watch -p tsconfig.json",
     "watch2": "webpack --config build/webpack.config.js --watch",
     "test": "mocha --require source-map-support/register dest/test/index.js",
-    "test2": "mocha --require ts-node/register --watch-extensions ts,tsx test/session.ts"
+    "test2": "mocha --require ts-node/register --watch-extensions ts,tsx test/progress.ts"
   },
   "devDependencies": {
     "@types/react": "^16.0.34",

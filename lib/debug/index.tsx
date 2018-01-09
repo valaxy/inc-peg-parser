@@ -1,7 +1,8 @@
 import ParsingNode from '../parsing/parsingNode'
 import Session from '../parsing/session'
 import verbatimParsing from '../parsing/verbatimParsing'
-import createPEG from './peg/numberExpression'
+import createPEG from './peg/json'
+// import createPEG from './peg/numberExpression'
 
 import React = require('react')
 import ReactDom = require('react-dom')
@@ -9,6 +10,7 @@ import sigma = require('sigma')
 import leftAlignNarrowDraw from '../draw/leftAlignNarrowDraw'
 import centerAlignNarrowDraw from '../draw/centerAlignNarrowDraw'
 import Sidebar from './sidebar/index'
+
 import './index.scss'
 
 const createNode = function(symbol = '@', children = []) {
@@ -19,7 +21,8 @@ const createNode = function(symbol = '@', children = []) {
 }
 
 
-const TEXT = '123'
+// const TEXT = '123'
+const TEXT = 'false'
 
 class Main extends React.Component {
     private _container

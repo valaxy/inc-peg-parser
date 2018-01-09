@@ -1,7 +1,7 @@
 import Optional from '../form/optional'
 import ParseProgress from './parseProgress'
 
-export default class Optionalprogress extends ParseProgress {
+export default class OptionalProgress extends ParseProgress {
     private _choice = -1
     private _step   = -1
 

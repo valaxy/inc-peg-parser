@@ -2,7 +2,7 @@ import ParseProgress from './ParseProgress'
 import Choice from '../form/choice'
 
 class ChoiceProgress extends ParseProgress {
-    private _choice: number = -1
+    private _choice: number = 0
     private _step: number = -1
 
     get currentSubForm() {
