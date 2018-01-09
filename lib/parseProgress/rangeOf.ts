@@ -22,4 +22,9 @@ export default class RangeOfProgress extends ParseProgress {
     constructor(private _form: RangeOf) {
         super()
     }
+
+    accept(ch: string) {
+        ch = ch[0]
+        return this._form.charStart <= ch && ch <= this._form.charEnd
+    }
 }

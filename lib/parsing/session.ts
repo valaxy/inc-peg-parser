@@ -26,11 +26,11 @@ export default class Session {
 
     // 创建父子关系，移进流浪指针
     private _consume(connective: ParsingNode, vagrant: ParsingNode) {
-        if (typeof vagrant.form != 'string') { throw new Error('impossible typeof vagrant.form != "string"') }
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
         connective.add(vagrant) // 添加子节点
         return {
             nextConnectiveNode: connective,          // 当前连接节点仍有可能继续链接子节点
-            nextVagrantNode: vagrant.nextVagrantNode // 当前游离节点已经处理完了，切换到下一个
+            nextVagrantNode: vagrant.nextVagrantNode // 当前流浪节点已经处理完了，切换到下一个
         }
     }
 
@@ -39,7 +39,7 @@ export default class Session {
         connective.add(generate)
         return {
             nextConnectiveNode: generate, // 关注点放到子节点
-            nextVagrantNode: vagrant      // 游离节点不变
+            nextVagrantNode: vagrant      // 流浪节点不变
         }
     }
 

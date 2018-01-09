@@ -5,6 +5,10 @@ export default class ZeroOrMoreProgress extends ParseProgress {
     private _choice = -1
     private _step   = -1
 
+    get form() {
+        return this._form
+    }
+
     nextChoice() {
         this._choice += 1
         return true

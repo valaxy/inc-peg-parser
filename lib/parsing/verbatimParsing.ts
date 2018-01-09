@@ -6,20 +6,6 @@ import * as p from '../parseProgress/index'
  * 提供逐字节的核心解析算法，通过计算可能返回以下解析指令：
  */
 const PARSING: ParsingDirective = {
-    chunk(chunk: p.ChunkProgress, vagrant: ParsingNode) {
-        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
-
-        if (chunk.currentCharacter == vagrant.character) {
-            return {
-                type: 'consume'
-            }
-        }
-
-        return {
-            type: 'back'
-        }
-    },
-
     sequence(sequence: p.SequenceProgress, vagrant: ParsingNode) {
         if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
 
@@ -45,27 +31,55 @@ const PARSING: ParsingDirective = {
             type: 'descend',
             value: rule.subForm
         }
+    },
+
+    oneOrMore(oneOrMore: p.OneOrMoreProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
+        // 这里不对匹配与否做具体判断，交由下层去判断
+        return {
+            type: 'decent',
+            value: oneOrMore.form
+        }
+    },
+
+    zeroOrMore(zeroOrMore: p.ZeorOrMoreProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
+        // 这里不对匹配与否做具体判断，交由下层去判断
+        return {
+            type: 'decent',
+            value: zeroOrMore.form
+        }
+    },
+
+    chunk(chunk: p.ChunkProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
+        if (chunk.currentCharacter == vagrant.character) {
+            return {
+                type: 'consume'
+            }
+        }
+
+        return {
+            type: 'back'
+        }
+    },
+
+    rangeOf(rangeOf: p.RangeOfProgress, vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
+        if (rangeOf.accept(vagrant.character)) {
+            return {
+                type: 'consume'
+            }
+        }
+
+        return {
+            type: 'back'
+        }
     }
-
-    // zeorOrMore(zeroOrMore: ZeroOrMoreProgress, ch: string) {
-    //     if (zeroOrMore.matchNothing) {
-    //         return {
-    //             type: 'back'
-    //         }
-    //     }
-    //
-    //     return {
-    //         type: 'add',
-    //         value: zeroOrMore.subForm
-    //     }
-    // }
-
-    // rangeOf({text, pos, setPos}) {
-    //     if (pos >= text.length) throw new Error('error')
-    //     let ch = text[0]
-    //     if (ch < this._charX || ch > this._charY) throw new Error('rangeOf error')
-    //     setPos(pos + 1)
-    // }
 }
 
 export default PARSING

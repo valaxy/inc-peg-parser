@@ -128,7 +128,8 @@ export default class ParsingNode {
     }
 
 
-    add(otherNode) {
+    /** 添加树节点关系 */
+    add(otherNode: ParsingNode) {
         otherNode._parent = this
         this._children.push(otherNode)
     }

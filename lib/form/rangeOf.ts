@@ -3,7 +3,7 @@ import RangeOfProgress from '../parseProgress/rangeOf'
 
 export default class RangeOf extends Form {
     get id() { return 5 }
-    
+
     get charStart() { return this._charStart }
 
     get charEnd() { return this._charEnd }
