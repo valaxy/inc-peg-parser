@@ -1,5 +1,5 @@
 import AnyOf from '../form/anyOf'
-import ParsingNode from '../parsingNode'
+import ParsingNode from '../parsing/parsingNode'
 import ParseProgress from './parseProgress'
 
 class AnyOfProgress extends ParseProgress {
@@ -28,7 +28,7 @@ class AnyOfProgress extends ParseProgress {
 
     consume(symbol: ParsingNode) {
         if (symbol.isTerminal) {
-            return this._chars.indexOf(<string>(symbol.form)) >= 0
+            return this._chars.indexOf(symbol.character) >= 0
         } else {
             return false
         }

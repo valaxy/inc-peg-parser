@@ -11,9 +11,6 @@ abstract class ParseProgress {
 
     /** 判断是否有下一个step */
     abstract hasNextStep(): boolean
-
-
-    abstract take(ch: string): { }
 }
 
 export default ParseProgress

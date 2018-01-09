@@ -4,7 +4,6 @@ import * as p from '../parseProgress/index'
 
 /**
  * 提供逐字节的核心解析算法，通过计算可能返回以下解析指令：
- *
  */
 const PARSING: ParsingDirective = {
     chunk(chunk: p.ChunkProgress, vagrant: ParsingNode) {
@@ -26,7 +25,7 @@ const PARSING: ParsingDirective = {
 
         return {
             type: 'descend',
-            value: sequence.currentSubForm // a form
+            value: sequence.currentSubForm
         }
     },
 

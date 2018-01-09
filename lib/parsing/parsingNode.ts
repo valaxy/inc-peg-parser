@@ -2,53 +2,60 @@ import Form from '../form/form'
 import ParseProgress from '../parseProgress/parseProgress'
 
 
+/** 解析树的节点 */
 export default class ParsingNode {
     // 指向下一个游离节点
     // 各个游离节点通过该属性组成一个链表结构
     private _nextVagrantNode: ParsingNode = null
-    private _parent: ParsingNode
-    private _children: ParsingNode[]
+
+    // 树结构指针
+    private _parent: ParsingNode = null
+    private _children: ParsingNode[] = []
     private _form: Form|string
     private _progress: ParseProgress
-    private _isNaming: boolean // 是否是命名节点
-
-    get parent() { return this._parent }
-
-    get children() { return this._children }
-
-    get form() { return this._form }
-
-    get progress() { return this._progress }
-
-    get isNamed() { return this._isNaming }
-
-    get character() { return this._form as string }
-
-    get isTerminal() { return this.hasNoChild() }
 
     get nextVagrantNode() { return this._nextVagrantNode }
 
     set nextVagrantNode(node) { this._nextVagrantNode = node }
 
+    get parent() { return this._parent }
+
+    get children() { return this._children }
+
+    get isTerminal() { return typeof this._form == 'string' }
+
+    get form(): Form {
+        if (this.isTerminal) { throw new Error('should not be a terminal') }
+        return this._form as Form
+    }
+
+    get character(): string {
+        if (!this.isTerminal) { throw new Error('should be a terminal') }
+        return this._form as string
+    }
+
+    get progress() { return this._progress }
+
+    get hasParent() { return !!this.parent }
+
+    get hasChild() { return this.children.length > 0 }
+
+
     // constructor('a')
     // constructor(new Form)
-    // constructor(new Form, true)
-    constructor(form: Form|string, isNaming: boolean = false) {
-        this._parent = null
-        this._children = []
+    constructor(form: Form|string) {
         this._form = form
         if (typeof form == 'string') {
             this._progress = null
-            this._isNaming = false
         } else {
             this._progress = form.createProgress()
-            this._isNaming = isNaming
         }
     }
 
-    hasParent() {
-        return !!this.parent
-    }
+
+    //
+    // TODO 下面的接口还需要使用吗???
+    //
 
     findIndex(): number {
         let children = this.parent.children
@@ -57,13 +64,6 @@ export default class ParsingNode {
         }
     }
 
-    hasChild() {
-        return this.children.length > 0
-    }
-
-    hasNoChild() {
-        return !this.hasChild()
-    }
 
     isFirstChild() {
         return this.parent.children[0] == this

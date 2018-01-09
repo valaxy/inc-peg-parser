@@ -1,4 +1,4 @@
-import ParsingNode from '../parsingNode'
+import ParsingNode from './parsingNode'
 
 /** 维护未处理节点的链表 */
 export default class ParsingProvider {
@@ -10,25 +10,25 @@ export default class ParsingProvider {
 
     private _break(node: ParsingNode) {
         let children = node.removeChildren()
-        children[children.length - 1]._nextVagrantNode = node._nextVagrantNode
+        children[children.length - 1].nextVagrantNode = node.nextVagrantNode
         for (let i = 0; i<children.length - 1; i++) {
-            children[i]._nextVagrantNode = children[i + 1]
+            children[i].nextVagrantNode = children[i + 1]
         }
-        this._node._nextVagrantNode = children[0]
+        this._node.nextVagrantNode = children[0]
     }
 
     isEmpty() {
-        return this._node._nextVagrantNode === null
+        return this._node.nextVagrantNode === null
     }
 
     pop(): ParsingNode {
-        let top = this._node._nextVagrantNode
-        this._node._nextVagrantNode = top._nextVagrantNode
+        let top = this._node.nextVagrantNode
+        this._node.nextVagrantNode = top.nextVagrantNode
         return top
     }
 
     peek(): ParsingNode {
-        return this._node._nextVagrantNode
+        return this._node.nextVagrantNode
     }
 
     breakdownTopTree() {

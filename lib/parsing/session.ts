@@ -72,7 +72,7 @@ export default class Session {
     // 一旦当前form匹配失败就需要选择下一个choice
     // 若下一个choice也失败, 则需要parent选择下一个choice, 如此直到根节点
     private _back(connective: ParsingNode, vagrant: ParsingNode) {
-        if (typeof vagrant.form != 'string') { throw new Error("impossible: typeof vagrant.form != 'string'") }
+        if (!vagrant.isTerminal) { throw new Error("vagrant should be a terminal") }
 
         while (true) {
             if (connective == null) {
