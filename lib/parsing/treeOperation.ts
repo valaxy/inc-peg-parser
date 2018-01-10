@@ -17,5 +17,9 @@ export default class TreeOperation {
         return new TreeOperation('break')
     }
 
+    static seal() {
+        return new TreeOperation('seal')
+    }
+
     constructor(public type: string, public value?: any) { }
 }
