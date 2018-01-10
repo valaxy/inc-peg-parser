@@ -10,6 +10,7 @@ export default class Choice extends Form {
 
     constructor(...subForms: Form[]) {
         super()
+        if (subForms.length == 0) { throw new Error('subForms should not empty') }
         this._subForms = subForms
     }
 

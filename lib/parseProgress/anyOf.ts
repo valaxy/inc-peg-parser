@@ -5,7 +5,6 @@ import ParseProgress from './parseProgress'
 class AnyOfProgress extends ParseProgress {
     private _choice = -1
     private _step: number
-    private _chars: string
 
     constructor(private _anyOf: AnyOf) {
         super()

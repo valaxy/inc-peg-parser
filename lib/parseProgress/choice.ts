@@ -2,21 +2,22 @@ import ParseProgress from './ParseProgress'
 import Choice from '../form/choice'
 
 class ChoiceProgress extends ParseProgress {
-    private _choice: number = 0
-    private _step: number = -1
+    private _choice: number = -1
+    private _step: number
 
     get currentSubForm() {
-        return this._form.subForms[this._choice]
+        return this._choiceForm.subForms[this._choice]
     }
 
-    constructor(private _form: Choice) {
+    constructor(private _choiceForm: Choice) {
         super()
+        this.nextChoice()
     }
 
     nextChoice() {
         this._step = -1
         this._choice += 1
-        return this._choice < this._form.subForms.length
+        return this._choice < this._choiceForm.subForms.length
     }
 
     nextStep() {
