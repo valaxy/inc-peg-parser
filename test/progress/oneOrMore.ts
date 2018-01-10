@@ -52,7 +52,7 @@ describe('OneOrMoreProgress', function() {
     })
 
 
-    it('consume', function() {
+    it('consume: match zero', function() {
         let p = rule.createProgress()
 
         p.nextStep()
@@ -60,9 +60,39 @@ describe('OneOrMoreProgress', function() {
         assert.equal(p.consume(new ParsingNode(subRule)).type, 'connect')
         assert.equal(p.consume(new ParsingNode(rule)).type, 'break')
 
+        assert.isNotOk(p.nextChoice())
+    })
+
+
+    it('consume: match one', function() {
+        let p = rule.createProgress()
+
         p.nextStep()
-        assert.equal(p.consume(new ParsingNode('x')).type, 'descend')
+        p.nextStep()
+
+        assert.isOk(p.nextChoice())
+        p.nextStep()
         assert.equal(p.consume(new ParsingNode(subRule)).type, 'connect')
-        assert.equal(p.consume(new ParsingNode(rule)).type, 'break')
+        assert.isNotOk(p.hasNextStep())
+
+        assert.isNotOk(p.nextChoice())
+    })
+
+
+    it('consume: match two', function() {
+        let p = rule.createProgress()
+
+        p.nextStep()
+        p.nextStep()
+        p.nextStep()
+
+        assert.isOk(p.nextChoice())
+        p.nextStep()
+        assert.equal(p.consume(new ParsingNode(subRule)).type, 'connect')
+        p.nextStep()
+        assert.equal(p.consume(new ParsingNode(subRule)).type, 'connect')
+        assert.isNotOk(p.hasNextStep())
+
+        assert.isNotOk(p.nextChoice())
     })
 })
