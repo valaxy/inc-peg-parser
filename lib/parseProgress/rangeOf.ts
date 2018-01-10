@@ -4,7 +4,7 @@ import ParsingNode from '../parsing/parsingNode'
 import TreeOperation from '../parsing/treeOperation'
 
 export default class RangeOfProgress extends ParseProgress {
-    private _step: number = -1
+    private _trying: boolean = false
 
     constructor(private _form: RangeOf) {
         super()
@@ -20,11 +20,11 @@ export default class RangeOfProgress extends ParseProgress {
     }
 
     nextStep() {
-        this._step += 1
+        this._trying = true
     }
 
     hasNextStep() {
-        return this._step < 0
+        return !this._trying
     }
 
     consume(vagrant: ParsingNode) {

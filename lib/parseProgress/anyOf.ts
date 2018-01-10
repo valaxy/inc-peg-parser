@@ -4,7 +4,7 @@ import ParsingNode from '../parsing/parsingNode'
 import TreeOperation from '../parsing/treeOperation'
 
 class AnyOfProgress extends ParseProgress {
-    private _tryMatch: boolean = false
+    private _trying: boolean = false // 只有唯一的状态
 
     constructor(private _anyOf: AnyOf) {
         super()
@@ -19,11 +19,11 @@ class AnyOfProgress extends ParseProgress {
     }
 
     nextStep() {
-        this._tryMatch = true
+        this._trying = true
     }
 
     hasNextStep() {
-        return !this._tryMatch
+        return !this._trying
     }
 
     consume(vagrant: ParsingNode) {
