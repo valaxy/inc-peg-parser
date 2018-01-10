@@ -6,6 +6,11 @@ export default class OptionalProgress extends ParseProgress {
     // true: 正在尝试匹配
     // false: 尝试匹配过但是失败了
     private _tryMatching = true
+    private _step: number = -1
+
+    constructor(private _form: Optional) {
+        super()
+    }
 
     nextChoice() {
         if (this._tryMatching) {
@@ -17,14 +22,14 @@ export default class OptionalProgress extends ParseProgress {
     }
 
     nextStep() {
-        // do nothing
+        this._step += 1
     }
 
     hasNextStep() {
-        return false // 永远只有当前这一步有效
-    }
-
-    constructor(private _form: Optional) {
-        super()
+        if (this._tryMatching) {
+            return this._step == -1 // 永远只有当前这一步有效
+        } else {
+            return false
+        }
     }
 }
