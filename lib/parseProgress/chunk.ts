@@ -3,7 +3,7 @@ import Chunk from '../form/chunk'
 
 class ChunkProgress extends ParseProgress {
     private _choice = -1
-    private _step = -1
+    private _step: number
 
     get currentCharacter() {
         return this._chunk.text[this._step]
@@ -11,16 +11,17 @@ class ChunkProgress extends ParseProgress {
 
     constructor(private _chunk: Chunk) {
         super()
+        this.nextChoice()
     }
 
     nextChoice() {
         this._choice += 1
+        this._step = -1
         return this._choice < 1
     }
 
     nextStep() {
         this._step += 1
-        return this._step < this._chunk.text.length
     }
 
     hasNextStep() {

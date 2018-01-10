@@ -7,16 +7,15 @@ class AnyOfProgress extends ParseProgress {
     private _step: number
     private _chars: string
 
-    constructor(anyOf: AnyOf) {
+    constructor(private _anyOf: AnyOf) {
         super()
-        this._chars = anyOf.chars
         this.nextChoice()
     }
 
     nextChoice() {
         this._choice += 1
         this._step = -1
-        return this._choice < this._chars.length
+        return this._choice < this._anyOf.chars.length
     }
 
     nextStep() {

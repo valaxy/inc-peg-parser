@@ -8,6 +8,7 @@ export default class Chunk extends Form {
 
     constructor(private _text: string) {
         super()
+        if (this._text.length == 0) { throw new Error('should not be empty string') }
     }
 
     createProgress() {

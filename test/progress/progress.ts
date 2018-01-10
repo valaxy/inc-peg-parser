@@ -1,6 +1,7 @@
 import * as f from '../../lib/form/index'
 import { assert } from 'chai'
 import './anyOf'
+import './chunk'
 
 describe('Progress', function() {
     describe('OptionalProgress', function() {
