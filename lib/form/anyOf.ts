@@ -8,6 +8,7 @@ export default class AnyOf extends Form {
 
     constructor(private _chars: string) {
         super()
+        if (this._chars.length == 0) { throw new Error('can not be empty string') }
     }
 
     createProgress() {
