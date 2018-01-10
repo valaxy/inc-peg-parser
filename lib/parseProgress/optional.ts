@@ -1,20 +1,22 @@
-import Optional from '../form/optional'
 import ParseProgress from './parseProgress'
+import Optional from '../form/optional'
+import ParsingNode from '../parsing/parsingNode'
+import TreeOperation from '../parsing/treeOperation'
 
 export default class OptionalProgress extends ParseProgress {
     // 当前是否正在尝试匹配子规则
     // true: 正在尝试匹配
     // false: 尝试匹配过但是失败了
-    private _tryMatching = true
+    private _trying = true
     private _step: number = -1
 
-    constructor(private _form: Optional) {
+    constructor(private _optional: Optional) {
         super()
     }
 
     nextChoice() {
-        if (this._tryMatching) {
-            this._tryMatching = false
+        if (this._trying) {
+            this._trying = false
             return true
         } else {
             return false
@@ -26,10 +28,33 @@ export default class OptionalProgress extends ParseProgress {
     }
 
     hasNextStep() {
-        if (this._tryMatching) {
-            return this._step == -1 // 永远只有当前这一步有效
+        if (this._trying) {
+            return this._step < 1
         } else {
             return false
         }
+    }
+
+    consume(vagrant: ParsingNode) {
+        if (this._trying) {
+            if (this._step == 0) { // 尝试匹配子规则的阶段
+                if (vagrant.isTerminal) {
+                    return TreeOperation.descend(new ParsingNode(this._optional.subForm))
+                } else {
+                    if (this._optional.subForm == vagrant.form) {
+                        return TreeOperation.connect()
+                    } else {
+                        return TreeOperation.break()
+                    }
+                }
+            } else if (this._step == 1) {
+                return TreeOperation.seal() // 匹配子规则1次成功
+            } else {
+                throw new Error(`error step = ${this._step}`)
+            }
+        }
+
+        // 匹配空字符串
+        return TreeOperation.seal()
     }
 }

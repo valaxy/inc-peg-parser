@@ -1,20 +1,22 @@
 import ParseProgress from './parseProgress'
 import RangeOf from '../form/rangeOf'
 import ParsingNode from '../parsing/parsingNode'
+import TreeOperation from '../parsing/treeOperation'
 
 export default class RangeOfProgress extends ParseProgress {
-    private _choice = -1
-    private _step: number
+    private _step: number = -1
 
     constructor(private _form: RangeOf) {
         super()
-        this.nextChoice()
+    }
+
+    private _accept(ch: string) {
+        ch = ch[0]
+        return this._form.charStart <= ch && ch <= this._form.charEnd
     }
 
     nextChoice() {
-        this._choice += 1
-        this._step = -1
-        return this._choice < 1
+        return false // 只有当前一种选择
     }
 
     nextStep() {
@@ -25,24 +27,15 @@ export default class RangeOfProgress extends ParseProgress {
         return this._step < 0
     }
 
-
-    accept(ch: string) {
-        ch = ch[0]
-        return this._form.charStart <= ch && ch <= this._form.charEnd
-    }
-
-
     consume(vagrant: ParsingNode) {
-        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
-
-        if (this.accept(vagrant.character)) {
-            return {
-                type: 'consume'
+        if (vagrant.isTerminal) {
+            if (this._accept(vagrant.character)) {
+                return TreeOperation.connect()
+            } else {
+                return TreeOperation.back()
             }
         }
 
-        return {
-            type: 'back'
-        }
+        return TreeOperation.break()
     }
 }

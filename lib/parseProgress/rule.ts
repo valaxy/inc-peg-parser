@@ -1,5 +1,7 @@
 import ParseProgress from './parseProgress'
 import Rule from '../form/rule'
+import ParsingNode from '../parsing/parsingNode'
+import TreeOperation from '../parsing/treeOperation'
 
 class RuleProgress extends ParseProgress {
     private _choice = -1
@@ -25,6 +27,10 @@ class RuleProgress extends ParseProgress {
 
     hasNextStep() {
         return this._step < 0
+    }
+
+    consume(vagrant: ParsingNode) {
+        return null
     }
 }
 

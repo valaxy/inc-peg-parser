@@ -1,5 +1,6 @@
 import Form from '../form/form'
 import ParsingNode from '../parsing/parsingNode'
+import TreeOperation from '../parsing/treeOperation'
 
 // 实例化成功后就处于一个有效状态
 
@@ -13,6 +14,8 @@ abstract class ParseProgress {
 
     /** 判断是否有下一个step */
     abstract hasNextStep(): boolean
+
+    abstract consume(vagrant: ParsingNode): TreeOperation
 }
 
 export default ParseProgress
