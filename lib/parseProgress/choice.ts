@@ -5,7 +5,7 @@ import TreeOperation from '../parsing/treeOperation'
 
 class ChoiceProgress extends ParseProgress {
     private _choice: number = -1
-    private _step: number
+    private _tryMatch: boolean
 
     get currentSubForm() {
         return this._choiceForm.subForms[this._choice]
@@ -17,18 +17,17 @@ class ChoiceProgress extends ParseProgress {
     }
 
     nextChoice() {
-        this._step = -1
+        this._tryMatch = false
         this._choice += 1
         return this._choice < this._choiceForm.subForms.length
     }
 
     nextStep() {
-        this._step += 1
-        return this._step < 1 // 只有1步
+        this._tryMatch = true
     }
 
     hasNextStep() {
-        return this._step < 0
+        return !this._tryMatch
     }
 
     consume(vagrant: ParsingNode) {

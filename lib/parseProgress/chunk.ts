@@ -1,5 +1,8 @@
 import ParseProgress from './parseProgress'
 import Chunk from '../form/chunk'
+import ParsingNode from '../parsing/parsingNode'
+import TreeOperation from '../parsing/treeOperation'
+
 
 class ChunkProgress extends ParseProgress {
     private _choice = -1
@@ -26,6 +29,18 @@ class ChunkProgress extends ParseProgress {
 
     hasNextStep() {
         return this._step + 1 < this._chunk.text.length
+    }
+
+    consume(vagrant: ParsingNode) {
+        if (vagrant.isTerminal) {
+            if (this.currentCharacter == vagrant.character) {
+                return TreeOperation.connect()
+            }
+
+            return TreeOperation.back()
+        }
+
+        return TreeOperation.break()
     }
 }
 

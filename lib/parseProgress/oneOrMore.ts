@@ -1,16 +1,14 @@
-import OneOrMore from '../form/oneOrMore'
 import ParseProgress from './parseProgress'
+import OneOrMore from '../form/oneOrMore'
+import ParsingNode from '../parsing/parsingNode'
+import TreeOperation from '../parsing/treeOperation'
 
 export default class OneOrMoreProgress extends ParseProgress {
     private _trying = true // 是否是尝试状态
     private _maxMatchCount: number
     private _successMatchCount = -1
 
-    get form() {
-        return this._form
-    }
-
-    constructor(private _form: OneOrMore) {
+    constructor(private _oneOrMore: OneOrMore) {
         super()
     }
 
@@ -39,5 +37,18 @@ export default class OneOrMoreProgress extends ParseProgress {
         } else {
             return this._successMatchCount < this._maxMatchCount
         }
+    }
+
+    consume(vagrant: ParsingNode) {
+        if (vagrant.isTerminal) {
+            // 这里不对匹配与否做具体判断，交由下层去判断
+            return TreeOperation.descend(new ParsingNode(this._oneOrMore.subForm)) // 循环子Form
+        }
+
+        if (this._oneOrMore.subForm == vagrant.form) {
+            return TreeOperation.connect()
+        }
+
+        return TreeOperation.break()
     }
 }

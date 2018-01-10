@@ -1,12 +1,13 @@
 import ParseProgress from './parseProgress'
 import Sequence from '../form/sequence'
+import ParsingNode from '../parsing/parsingNode'
+import TreeOperation from '../parsing/treeOperation'
 
 class SequenceProgress extends ParseProgress {
-    private _choice = -1
     private _step = -1
 
     get currentSubForm() {
-        return  this._sequence.subForms[this._step]
+        return this._sequence.subForms[this._step]
     }
 
     constructor(private _sequence: Sequence) {
@@ -14,8 +15,7 @@ class SequenceProgress extends ParseProgress {
     }
 
     nextChoice() {
-        this._choice += 1
-        return this._choice < 1
+        return false // 永远只有1个choice
     }
 
     nextStep() {
@@ -25,6 +25,20 @@ class SequenceProgress extends ParseProgress {
 
     hasNextStep() {
         return this._step + 1 < this._sequence.subForms.length
+    }
+
+    consume(vagrant: ParsingNode) {
+        if (vagrant.isTerminal) {
+            return TreeOperation.descend(new ParsingNode(this.currentSubForm))
+        }
+
+        // 流浪节点可以直接合并
+        if (this.currentSubForm === vagrant.form) {
+            return TreeOperation.connect()
+        }
+
+        // 无法合并
+        return TreeOperation.break()
     }
 }
 
