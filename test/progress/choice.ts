@@ -1,4 +1,5 @@
 import * as f from '../../lib/form/index'
+import ParsingNode from '../../lib/parsing/parsingNode'
 import { assert } from 'chai'
 
 describe('ChoiceProgress', function() {
@@ -39,5 +40,23 @@ describe('ChoiceProgress', function() {
         assert.isNotOk(p.hasNextStep())
 
         assert.isNotOk(p.nextChoice())
+    })
+
+    it('consume', function() {
+        let s1 = f.chunk('x')
+        let s2 = f.chunk('y')
+        let rule = f.choice(s1, s2)
+        let p = rule.createProgress()
+
+        p.nextStep()
+        assert.equal(p.consume(new ParsingNode('x')).type, 'descend')
+        assert.equal(p.consume(new ParsingNode('u')).type, 'descend')
+        assert.equal(p.consume(new ParsingNode(s1)).type, 'descend')
+        assert.equal(p.consume(new ParsingNode(s2)).type, 'break')
+
+        p.nextChoice()
+        assert.equal(p.consume(new ParsingNode('x')).type, 'descend')
+        assert.equal(p.consume(new ParsingNode(s2)).type, 'descend')
+        assert.equal(p.consume(new ParsingNode(s1)).type, 'break')
     })
 })

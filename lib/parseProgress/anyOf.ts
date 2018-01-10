@@ -1,39 +1,42 @@
+import ParseProgress from './parseProgress'
 import AnyOf from '../form/anyOf'
 import ParsingNode from '../parsing/parsingNode'
-import ParseProgress from './parseProgress'
+import TreeOperation from '../parsing/treeOperation'
 
 class AnyOfProgress extends ParseProgress {
-    private _choice = -1
-    private _step: number
+    private _tryMatch: boolean = false
 
     constructor(private _anyOf: AnyOf) {
         super()
-        this.nextChoice()
+    }
+
+    private _accept(ch: string) {
+        return this._anyOf.chars.indexOf(ch) >= 0
     }
 
     nextChoice() {
-        this._choice += 1
-        this._step = -1
-        return this._choice < this._anyOf.chars.length
+        return false // 只有当前一种选择
     }
 
     nextStep() {
-        this._step += 1
+        this._tryMatch = true
     }
 
     hasNextStep() {
-        return this._step < 0
+        return !this._tryMatch
+    }
+
+    consume(vagrant: ParsingNode) {
+        if (vagrant.isTerminal) {
+            if (this._accept(vagrant.character)) {
+                return TreeOperation.connect()
+            } else {
+                return TreeOperation.back()
+            }
+        }
+
+        throw new Error('vagrant should be a terminal node')
     }
 }
 
 export default AnyOfProgress
-
-
-
-// accept(symbol: ParsingNode) {
-//     if (symbol.isTerminal) {
-//         return this._chars.indexOf(symbol.character) >= 0
-//     } else {
-//         return false
-//     }
-// }

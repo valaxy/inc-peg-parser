@@ -1,5 +1,6 @@
-import RangeOf from '../form/rangeOf'
 import ParseProgress from './parseProgress'
+import RangeOf from '../form/rangeOf'
+import ParsingNode from '../parsing/parsingNode'
 
 export default class RangeOfProgress extends ParseProgress {
     private _choice = -1
@@ -28,5 +29,20 @@ export default class RangeOfProgress extends ParseProgress {
     accept(ch: string) {
         ch = ch[0]
         return this._form.charStart <= ch && ch <= this._form.charEnd
+    }
+
+
+    consume(vagrant: ParsingNode) {
+        if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
+
+        if (this.accept(vagrant.character)) {
+            return {
+                type: 'consume'
+            }
+        }
+
+        return {
+            type: 'back'
+        }
     }
 }
