@@ -2,12 +2,42 @@ import 'mocha'
 import { assert } from 'chai'
 import Session from '../../lib/parsing/session'
 import ParsingNode from '../../lib/parsing/parsingNode'
+import * as f from '../../lib/form/index'
 import { createCommonTree } from './util'
 
 describe('session', function() {
-    describe('_rebuildVagrants', function() {
-        let s = new Session()
+    let s = new Session()
 
+    describe('_findNextConnectiveNode', function() {
+        it('return null', function() {
+            let rule = f.chunk('a')
+            let root = new ParsingNode(rule)
+            root.progress.nextStep()
+            assert.isNotOk(root.progress.hasNextStep())
+            assert.equal(s._findNextConnectiveNode(root), null)
+
+            let subNode = new ParsingNode(rule)
+            root.add(subNode)
+            subNode.progress.nextStep()
+            assert.isNotOk(subNode.progress.hasNextStep())
+            assert.equal(s._findNextConnectiveNode(subNode), null)
+        })
+
+        it('return node', function() {
+            let rule = f.chunk('a')
+            let root = new ParsingNode(rule)
+            assert.isOk(root.progress.hasNextStep())
+            assert.equal(s._findNextConnectiveNode(root), root)
+
+            let subNode = new ParsingNode(rule)
+            root.add(subNode)
+            subNode.progress.nextStep()
+            assert.isNotOk(subNode.progress.hasNextStep())
+            assert.equal(s._findNextConnectiveNode(subNode), root)
+        })
+    })
+
+    describe('_rebuildVagrants', function() {
         it('1 child', function() {
             let root = new ParsingNode('root')
             let n1 = new ParsingNode('n1')

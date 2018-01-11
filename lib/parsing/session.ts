@@ -25,30 +25,48 @@ export default class Session {
     private _endNode: ParsingNode
 
     private _parse(connective: p.ParseProgress, vagrant: ParsingNode): TreeOperation {
-        let operation = connective.consume(vagrant)
-        return operation
+        return connective.consume(vagrant)
     }
 
-    private _findConnectiveNode(node: ParsingNode) {
+    // 返回null说明解析完毕, 否则返回的是下一个连接点
+    private _findNextConnectiveNode(node: ParsingNode): ParsingNode {
         while (true) {
-            if (node == null) { return null }
-            // 如果一个节点不能进行下一步, 说明它不能再也不能容纳任何一个节点
-            // 这时看看它的父亲节点
+            if (!node) { return null }
+            // 如果一个节点没有nextStep, 说明它的解析已经完毕, 不能再容纳节点了
+            // 这时看看它的父亲节点搞定这次解析没
             if (node.progress.hasNextStep()) { return node }
             node = node.parent
         }
     }
 
-    private _maintainAt(connectiveNode: ParsingNode) {
-        if (!connectiveNode) { throw new Error(`connectiveNode should not be null`) }
+    // insertAfterThis是breakTreeRoot的子节点, 因为insertedNode要插入到insertAfterThis的后面
+    // 所以需要打散breakTreeRoot, 并返回重新组织的流浪节点
+    private _rebuildVagrants(breakTreeRoot: ParsingNode, insertAfterThis: ParsingNode, insertedNode: ParsingNode) {
+        let children = breakTreeRoot.breakChildren()
+        children.push(null) // 方便尾节点建立空的链表联系
 
-        // 找到最近的第一个流浪节点，一定刚好就是nextVagrantNode
-        let vagrantNode = connectiveNode.nextVagrantNode
+        // 建立流浪节点链表联系
+        for (let i=0; i<children.length-1; i++) {
+            let child = children[i]
+            if (child === insertAfterThis) {
+                child.nextVagrantNode = insertedNode
+                insertedNode.nextVagrantNode = children[i+1]
+            } else {
+                child.nextVagrantNode = children[i+1]
+            }
+        }
+
+        // 返回链表头部
+        return children[0]
+    }
+
+    private _maintainAt(connectiveNode: ParsingNode, vagrantNode: ParsingNode) {
+        if (!connectiveNode) { throw new Error(`connectiveNode should not be null`) }
 
         while (true) {
             // 要找到固定树的最后一个连接节点
             let bakup = connectiveNode
-            connectiveNode = this._findConnectiveNode(connectiveNode)
+            connectiveNode = this._findNextConnectiveNode(connectiveNode)
 
             // 解析完毕(利用结尾哨兵保证此时一定是解析完毕状态)
             // assertTrue(this._parsingStack.isEmpty())
@@ -78,29 +96,6 @@ export default class Session {
         }
     }
 
-
-    // insertAfterThis是breakTreeRoot的子节点, 因为insertedNode要插入到insertAfterThis的后面
-    // 所以需要打散breakTreeRoot, 并返回重新组织的流浪节点
-    private _rebuildVagrants(breakTreeRoot: ParsingNode, insertAfterThis: ParsingNode, insertedNode: ParsingNode) {
-        let children = breakTreeRoot.breakChildren()
-        children.push(null) // 方便尾节点建立空的链表联系
-
-        // 建立流浪节点链表联系
-        for (let i=0; i<children.length-1; i++) {
-            let child = children[i]
-            if (child === insertAfterThis) {
-                child.nextVagrantNode = insertedNode
-                insertedNode.nextVagrantNode = children[i+1]
-            } else {
-                child.nextVagrantNode = children[i+1]
-            }
-        }
-
-        // 返回链表头部
-        return children[0]
-    }
-
-
     /**
      * insert a range of symbols after `target`
      * start: first symbol
@@ -115,7 +110,7 @@ export default class Session {
             // target.breakRightRelative()
         }
 
-        let nextConnectiveNode = this._maintainAt(target)
+        let nextConnectiveNode = this._maintainAt(target, target.nextVagrantNode)
         target.nextVagrantNode = null
         return nextConnectiveNode
     }
@@ -131,13 +126,15 @@ export default class Session {
             let headVagrant = this._rebuildVagrants(connective, insertAfterThis, insertNode)
 
             connective.resetProgress() // 需要从首个choice开始尝试解析
-            this._maintainAt(connective)
+            this._maintainAt(connective, headVagrant)
         } else {
-            // TODO 插入到最后
-            // 不需要maintain??
+            let keep = insertAfterThis.nextVagrantNode
+            insertAfterThis.nextVagrantNode = insertNode
+            insertNode.nextVagrantNode = keep
+
+            // TODO 仍然需要maintain, 考虑zeroOrMore
         }
     }
-
 }
 
 // // 移植失败
