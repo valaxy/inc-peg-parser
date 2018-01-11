@@ -1,5 +1,6 @@
 import './connectOperation'
 import './descendOperation'
 import './sealOperation'
+import './breakOperation'
 import './parsingProvider'
 import './session'

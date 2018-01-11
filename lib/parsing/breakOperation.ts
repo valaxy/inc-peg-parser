@@ -15,11 +15,9 @@ export default class BreakOperation extends TreeOperation {
         // 保留下一个流浪节点，因为打散当前流浪节点结构之后，需要重新组织流浪节点关系
         let keepNextVagrant = vagrant.nextVagrantNode
 
-        // 保留子节点，打散之后需要重新组织关系
-        let keepChildren = vagrant.children
-
-        // 移除当前流浪节点，该节点可以gc了
-        vagrant.seperateAtRoot()
+        // 移除当前流浪节点，保留子节点，打散之后需要重新组织关系
+        // vagrant节点可以gc了
+        let keepChildren = vagrant.breakChildren()
 
         // 重新组织流浪节点的链表关系
         for (let i = 0; i<keepChildren.length - 1; i++) {

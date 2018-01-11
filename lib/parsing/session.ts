@@ -144,27 +144,3 @@ export default class Session {
 //     let fallbackNodes = unboundNode.seperateLeafs()
 //     this._parsingStack.push(...fallbackNodes.reverse())
 // }
-
-// private _parse(connective: p.ParseProgress, vagrant: ParsingNode): ParsingDirectiveReturn {
-//     let name
-//     if (connective instanceof p.ChunkProgress) {
-//         name = 'chunk'
-//     } else if (connective instanceof p.SequenceProgress) {
-//         name = 'sequence'
-//     } else if (connective instanceof p.ChoiceProgress) {
-//         name = 'choice'
-//     } else if (connective instanceof p.RuleProgress) {
-//         name = 'rule'
-//     } else if (connective instanceof p.OneOrMoreProgress) {
-//         name = 'oneOrMore'
-//     } else if (connective instanceof p.ZeorOrMoreProgress) {
-//         name = 'zeroOrMore'
-//     } else if (connective instanceof p.RangeOfProgress) {
-//         name = 'rangeOf'
-//     } else {
-//         console.error(connective)
-//         throw new Error(`do not support this typeof connective`)
-//     }
-//
-//     return this._parsing[name](connective, vagrant)
-// }

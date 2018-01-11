@@ -94,10 +94,6 @@ export default class ParsingNode {
         this._children = []
     }
 
-    seperateAtRoot(): ParsingNode[] {
-        return null
-    }
-
     /** 分离叶节点并返回 */
     seperateLeafs(): ParsingNode[] {
         return null
