@@ -2,13 +2,16 @@ import ParseProgress from './parseProgress'
 import Optional from '../form/optional'
 import ParsingNode from '../parsing/parsingNode'
 import TreeOperation from '../parsing/treeOperation'
+import AssertError from '../assertError'
 
 export default class OptionalProgress extends ParseProgress {
     // 当前是否正在尝试匹配子规则
     // true: 正在尝试匹配
     // false: 尝试匹配过但是失败了
     private _trying = true
-    private _step: number = -1
+
+    // 匹配子规则的次数, 正在匹配也计算在内
+    private _matchCount: number = 0
 
     constructor(private _optional: Optional) {
         super()
@@ -24,12 +27,17 @@ export default class OptionalProgress extends ParseProgress {
     }
 
     nextStep() {
-        this._step += 1
+        if (this._trying) {
+            this._matchCount += 1
+            return
+        }
+
+        throw new AssertError(`do not have nextStep when _trying === false`)
     }
 
     hasNextStep() {
         if (this._trying) {
-            return this._step < 1
+            return this._matchCount === 0
         } else {
             return false
         }
@@ -37,20 +45,17 @@ export default class OptionalProgress extends ParseProgress {
 
     consume(vagrant: ParsingNode) {
         if (this._trying) {
-            if (this._step == 0) { // 尝试匹配子规则的阶段
-                if (vagrant.isTerminal) {
-                    return TreeOperation.descend(new ParsingNode(this._optional.subForm))
-                } else {
-                    if (this._optional.subForm == vagrant.form) {
-                        return TreeOperation.connect()
-                    } else {
-                        return TreeOperation.break()
-                    }
-                }
-            } else if (this._step == 1) {
-                return TreeOperation.seal() // 匹配子规则1次成功
+            if (this._matchCount !== 1) { throw new AssertError('_matchCount should equal 1') }
+
+            // 首次尝试匹配子规则的阶段
+            if (vagrant.isTerminal) {
+                return TreeOperation.descend(new ParsingNode(this._optional.subForm))
             } else {
-                throw new Error(`error step = ${this._step}`)
+                if (this._optional.subForm == vagrant.form) {
+                    return TreeOperation.connect()
+                } else {
+                    return TreeOperation.break()
+                }
             }
         }
 

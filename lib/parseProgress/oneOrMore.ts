@@ -39,7 +39,6 @@ export default class OneOrMoreProgress extends ParseProgress {
         if (this._trying) {
             return true
         } else {
-            console.log(this._successMatchCount, this._maxMatchCount)
             return this._successMatchCount < this._maxMatchCount
         }
     }

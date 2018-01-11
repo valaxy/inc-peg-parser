@@ -11,8 +11,7 @@ describe('OptionalProgress', function() {
 
         assert.isOk(p.hasNextStep())
         p.nextStep()
-        assert.isOk(p.hasNextStep())
-        p.nextStep()
+        assert.isNotOk(p.hasNextStep())
 
         assert.isOk(p.nextChoice())
         assert.isNotOk(p.hasNextStep())
@@ -28,10 +27,7 @@ describe('OptionalProgress', function() {
         assert.equal(p.consume(new ParsingNode(subRule)).type, 'connect')
         assert.equal(p.consume(new ParsingNode(rule)).type, 'break')
 
-        assert.isOk(p.hasNextStep())
-        p.nextStep()
-        assert.equal(p.consume(new ParsingNode('x')).type, 'seal')
-        assert.equal(p.consume(new ParsingNode(subRule)).type, 'seal')
+        assert.isNotOk(p.hasNextStep())
 
         assert.isOk(p.nextChoice())
         assert.equal(p.consume(new ParsingNode('x')).type, 'seal')

@@ -206,7 +206,6 @@ export default class Session {
             // target.breakRightRelative()
         }
 
-        console.log(target.nextVagrantNode.toName())
         let nextConnectiveNode = this._maintainAt(target)
         target.nextVagrantNode = null
         return nextConnectiveNode
