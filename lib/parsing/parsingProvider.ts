@@ -9,7 +9,7 @@ export default class ParsingProvider {
     }
 
     private _break(node: ParsingNode) {
-        let children = node.removeChildren()
+        let children = node.breakChildren()
         children[children.length - 1].nextVagrantNode = node.nextVagrantNode
         for (let i = 0; i<children.length - 1; i++) {
             children[i].nextVagrantNode = children[i + 1]

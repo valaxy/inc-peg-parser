@@ -3,7 +3,7 @@ import ParsingNode from './parsingNode'
 import PointTransfer from './pointTransfer'
 import ParsingProvider from './parsingProvider'
 import AssertError from '../assertError'
-
+import VagrantLinked from './vagrantLinked'
 
 /**
  * 回溯选择下一个连接点位
@@ -24,19 +24,22 @@ export default class BackOperation extends TreeOperation {
                 }
             }
 
+            // 不管怎么样, 需要先移除当前连接节点, 并还原吃掉的vagrant
+            let children = connective.breakChildren()
+            if (children.length > 0) {
+                children.splice(children.length - 1, 1) // 最后一个child一定是无效节点, 需要从链表里移除
+            }
+            vagrant = VagrantLinked.connect(children, vagrant)
+
             // nextChoice生效, 以当前choice继续进行解析
             if (connective.progress.nextChoice()) {
-                if (connective.nextVagrantNode) { throw new AssertError("impossible: progress.nextVagrantNode exist") }
-                let provider = new ParsingProvider(connective)
-                provider.breakdownMainTree()
-
                 return {
                     nextConnectiveNode: connective, // 连接节点不变
-                    nextVagrantNode: vagrant        // 流浪节点不变
+                    nextVagrantNode: vagrant        // 流浪节点是重新构建链表中的第一个节点
                 }
             }
 
-            // nextChoice失败, 则需要parent选择下一个choice, 如此直到根节点
+            // 需要parent选择nextChoice, 如此直到根节点
             connective = connective.parent
         }
     }
