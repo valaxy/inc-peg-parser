@@ -17,7 +17,7 @@ export default class DescendOperation extends TreeOperation {
         connective.add(this._generate)
         return {
             nextConnectiveNode: this._generate, // 关注点放到子节点
-            nextVagrantNode: vagrant      // 流浪节点不变
+            nextVagrantNode: vagrant            // 流浪节点不变
         }
     }
 }

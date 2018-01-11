@@ -12,9 +12,11 @@ export default class ConnectOperation extends TreeOperation {
     do(connective: ParsingNode, vagrant: ParsingNode): PointTransfer {
         if (!vagrant.isTerminal) { throw new Error('vagrant should be terminal') }
         connective.add(vagrant) // 添加子节点
-        return {
+        let result = {
             nextConnectiveNode: connective,          // 连接节点不变, 因为当前连接节点仍有可能继续链接子节点
             nextVagrantNode: vagrant.nextVagrantNode // 切换流浪节点, 因为当前流浪节点已经处理完毕
         }
+        vagrant.nextVagrantNode = null
+        return result
     }
 }

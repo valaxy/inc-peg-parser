@@ -3,7 +3,7 @@
   "version": "0.0.0-dev",
   "scripts": {
     "watch": "webpack --config build/webpack.config.js --watch",
-    "test": "mocha --require ts-node/register --watch-extensions ts,tsx test/progress/index.ts"
+    "test": "mocha --require ts-node/register --watch-extensions ts,tsx test/index.ts"
   },
   "devDependencies": {
     "@types/react": "^16.0.34",
