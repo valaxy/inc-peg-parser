@@ -24,8 +24,6 @@ export default class Session {
     private _startNode: ParsingNode
     private _endNode: ParsingNode
 
-
-
     private _parse(connective: p.ParseProgress, vagrant: ParsingNode): TreeOperation {
         let operation = connective.consume(vagrant)
         return operation
@@ -80,6 +78,29 @@ export default class Session {
         }
     }
 
+
+    // insertAfterThis是breakTreeRoot的子节点, 因为insertedNode要插入到insertAfterThis的后面
+    // 所以需要打散breakTreeRoot, 并返回重新组织的流浪节点
+    private _rebuildVagrants(breakTreeRoot: ParsingNode, insertAfterThis: ParsingNode, insertedNode: ParsingNode) {
+        let children = breakTreeRoot.breakChildren()
+        children.push(null) // 方便尾节点建立空的链表联系
+
+        // 建立流浪节点链表联系
+        for (let i=0; i<children.length-1; i++) {
+            let child = children[i]
+            if (child === insertAfterThis) {
+                child.nextVagrantNode = insertedNode
+                insertedNode.nextVagrantNode = children[i+1]
+            } else {
+                child.nextVagrantNode = children[i+1]
+            }
+        }
+
+        // 返回链表头部
+        return children[0]
+    }
+
+
     /**
      * insert a range of symbols after `target`
      * start: first symbol
@@ -103,25 +124,12 @@ export default class Session {
         if (!target.isTerminal) { throw new AssertError('target should be a terminal node') }
 
         let insertNode = new ParsingNode(ch)
-        let leftMostAncestor = ParsingProvider.leftMostAncestor(target)
+        let insertAfterThis = ParsingProvider.leftMostAncestor(target)
 
-        if (leftMostAncestor.parent) { // 不是根
-            // 建立流浪节点链表联系
-            let top = leftMostAncestor.parent
-            let children = top.breakChildren()
-            children.push(null) // 方便尾节点建立空的联系
-            for (let i=0; i<children.length-1; i++) {
-                let child = children[i]
-                if (child === leftMostAncestor) {
-                    child.nextVagrantNode = insertNode
-                    insertNode.nextVagrantNode = children[i+1]
-                } else {
-                    child.nextVagrantNode = children[i+1]
-                }
-            }
+        if (insertAfterThis.parent) { // 不是根
+            let connective = insertAfterThis.parent
+            let headVagrant = this._rebuildVagrants(connective, insertAfterThis, insertNode)
 
-            let connective = top
-            let headVagrant = children[0]
             connective.resetProgress() // 需要从首个choice开始尝试解析
             this._maintainAt(connective)
         } else {
