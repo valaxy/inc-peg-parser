@@ -40,15 +40,28 @@ export default class ParsingNode {
 
     get hasChild() { return this.children.length > 0 }
 
+    get isFirstChild() {
+        return this.parent.children[0] == this
+    }
+
+    get isLastChild() {
+        let children = this.parent.children
+        return children[children.length - 1] === this
+    }
 
     // constructor('a')
     // constructor(new Form)
     constructor(form: Form|string) {
         this._form = form
-        if (typeof form == 'string') {
+        this.resetProgress()
+    }
+
+
+    resetProgress() {
+        if (typeof this._form == 'string') {
             this._progress = null
         } else {
-            this._progress = form.createProgress()
+            this._progress = this._form.createProgress()
         }
     }
 
@@ -65,9 +78,7 @@ export default class ParsingNode {
     }
 
 
-    isFirstChild() {
-        return this.parent.children[0] == this
-    }
+
 
     firstChild(): ParsingNode {
         return this.children[0]
@@ -134,8 +145,14 @@ export default class ParsingNode {
         this._children.push(otherNode)
     }
 
-    removeChildren(): ParsingNode[] {
-        return null
+    /** 移除和子节点的关系, 返回子节点 */
+    breakChildren(): ParsingNode[] {
+        for (let child of this.children) {
+            child._parent = null
+        }
+        let keepChildren = this.children
+        this._children = []
+        return keepChildren
     }
 
     toName() {

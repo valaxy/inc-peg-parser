@@ -41,3 +41,12 @@ class AnyOfProgress extends ParseProgress {
 }
 
 export default AnyOfProgress
+
+
+// getStepStatus() {
+//     return this._trying // 其实只有一种有效状态
+// }
+//
+// recoverStep(status) {
+//     this._trying = status
+// }

@@ -21,8 +21,16 @@ export const createTree = function(descriptor: any): ParsingNode {
     let n = new ParsingNode(form)
     if (children) {
         for (let childDescriptor of children) {
-            n.children.push(this.createTree(childDescriptor))
+            n.add(createTree(childDescriptor))
         }
+    }
+    return n
+}
+
+export const createCommonTree = function(descriptor: any[]): ParsingNode {
+    let n = new ParsingNode('')
+    for (let child of descriptor) {
+        n.add(createCommonTree(child))
     }
     return n
 }

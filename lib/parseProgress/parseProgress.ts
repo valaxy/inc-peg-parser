@@ -19,3 +19,10 @@ abstract class ParseProgress {
 }
 
 export default ParseProgress
+
+
+// /** 用于recoverStep */
+// abstract getStepStatus(): any
+//
+// /** 可以将getStepStatus获得数据用于recoverStep */
+// abstract recoverStep(status: any): void

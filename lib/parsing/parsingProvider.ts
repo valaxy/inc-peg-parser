@@ -44,9 +44,18 @@ export default class ParsingProvider {
         // x一定在leftmost path中
         while (true) {
             x = x.parent
-            let children = x.removeChildren()
+            let children = x.breakChildren()
             // TODO
         }
     }
 
+    /** 返回最左祖宗节点, 或者并没有最左祖宗则返回自身 */
+    static leftMostAncestor(n: ParsingNode) {
+        while (true) {
+            let parent = n.parent
+            if (!parent) { return n } // 已经是根节点了
+            if (!n.isLastChild) { return n }
+            n = parent
+        }
+    }
 }

@@ -3,6 +3,7 @@ import Form from '../form/form'
 import ParsingProvider from './parsingProvider'
 import * as p from '../parseProgress/index'
 import TreeOperation from './treeOperation'
+import AssertError from '../assertError'
 
 // 术语解释：
 // - 流浪指针(vagrant pointer)：指向最先的未被并入结构的节点
@@ -97,29 +98,39 @@ export default class Session {
         target.nextVagrantNode = null
         return nextConnectiveNode
     }
+
+    insertCharacterAfter(target: ParsingNode, ch: string) {
+        if (!target.isTerminal) { throw new AssertError('target should be a terminal node') }
+
+        let insertNode = new ParsingNode(ch)
+        let leftMostAncestor = ParsingProvider.leftMostAncestor(target)
+
+        if (leftMostAncestor.parent) { // 不是根
+            // 建立流浪节点链表联系
+            let top = leftMostAncestor.parent
+            let children = top.breakChildren()
+            children.push(null) // 方便尾节点建立空的联系
+            for (let i=0; i<children.length-1; i++) {
+                let child = children[i]
+                if (child === leftMostAncestor) {
+                    child.nextVagrantNode = insertNode
+                    insertNode.nextVagrantNode = children[i+1]
+                } else {
+                    child.nextVagrantNode = children[i+1]
+                }
+            }
+
+            let connective = top
+            let headVagrant = children[0]
+            connective.resetProgress() // 需要从首个choice开始尝试解析
+            this._maintainAt(connective)
+        } else {
+            // TODO 插入到最后
+            // 不需要maintain??
+        }
+    }
+
 }
-
-
-// switch (type) {
-//     case 'consume':
-//         result = this._consume(connectiveNode, vagrantNode)
-//         break
-//     case 'descend':
-//         result = this._descend(connectiveNode, vagrantNode, value)
-//         break
-//     case 'back':
-//         result = this._back(connectiveNode, vagrantNode)
-//         break
-//     case 'break':
-//         result = this._break(connectiveNode, vagrantNode)
-//         break
-//     case 'seal':
-//         result = this._seal(connectiveNode, vagrantNode)
-//         break
-//     default:
-//         throw new Error(`do not support type=${type}`)
-// }
-
 
 // // 移植失败
 // if (unboundNode.hasNoChildren()) { // 终结符
