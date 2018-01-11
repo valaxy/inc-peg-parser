@@ -142,13 +142,8 @@ export default class Session {
 
             // TODO 仍然需要maintain, 考虑zeroOrMore
         }
+
+        // 返回最后这个terminal
+        return insertNode
     }
 }
-
-// // 移植失败
-// if (unboundNode.hasNoChildren()) { // 终结符
-//     this._nextChoice() // 可能导致progressNode为null
-// } else { // 非终结符
-//     let fallbackNodes = unboundNode.seperateLeafs()
-//     this._parsingStack.push(...fallbackNodes.reverse())
-// }
