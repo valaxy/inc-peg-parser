@@ -3,7 +3,7 @@ import { assert } from 'chai'
 import Session from '../../lib/parsing/session'
 import ParsingNode from '../../lib/parsing/parsingNode'
 import * as f from '../../lib/form/index'
-import { createCommonTree } from './util'
+import { createCommonTree, createTree, checkTreeEqual } from './util'
 
 describe('session', function() {
     let s = new Session()
@@ -104,6 +104,36 @@ describe('session', function() {
             assert.equal(n2.nextVagrantNode, n)
             assert.equal(n.nextVagrantNode, n3)
             assert.equal(n3.nextVagrantNode, null)
+        })
+    })
+
+
+    describe('_maintainAt', function() {
+        it('chunk', function() {
+            let session = new Session
+            let chunk = f.chunk('abc')
+            let root = new ParsingNode(chunk)
+
+            let a = new ParsingNode('a')
+            session._maintainAt(root, a)
+            checkTreeEqual(root, createTree([chunk, [
+                ['a']
+            ]]))
+
+            let b = new ParsingNode('b')
+            session._maintainAt(root, b)
+            checkTreeEqual(root, createTree([chunk, [
+                ['a'],
+                ['b']
+            ]]))
+
+            let c = new ParsingNode('c')
+            session._maintainAt(root, c)
+            checkTreeEqual(root, createTree([chunk, [
+                ['a'],
+                ['b'],
+                ['c']
+            ]]))
         })
     })
 })

@@ -24,10 +24,6 @@ export default class Session {
     private _startNode: ParsingNode
     private _endNode: ParsingNode
 
-    private _parse(connective: p.ParseProgress, vagrant: ParsingNode): TreeOperation {
-        return connective.consume(vagrant)
-    }
-
     // 返回null说明解析完毕, 否则返回的是下一个连接点
     private _findNextConnectiveNode(node: ParsingNode): ParsingNode {
         while (true) {
@@ -62,37 +58,49 @@ export default class Session {
 
     private _maintainAt(connectiveNode: ParsingNode, vagrantNode: ParsingNode) {
         if (!connectiveNode) { throw new Error(`connectiveNode should not be null`) }
+        if (!vagrantNode) { throw new AssertError('vagrantNode should not be null') }
 
         while (true) {
             // 要找到固定树的最后一个连接节点
-            let bakup = connectiveNode
             connectiveNode = this._findNextConnectiveNode(connectiveNode)
 
-            // 解析完毕(利用结尾哨兵保证此时一定是解析完毕状态)
-            // assertTrue(this._parsingStack.isEmpty())
-            if (!connectiveNode) { return bakup } // 正常返回最后一个处理过的
-            if (!vagrantNode) { return connectiveNode }
+            // 解析完毕, 流浪节点可能还有剩余
+            if (!connectiveNode) {
+                return {
+                    nextConnectiveNode: null,
+                    nextVagrantNode: vagrantNode
+                }
+            }
+
+            // 流浪节点提前消耗完毕
+            if (!vagrantNode) {
+                return {
+                    nextConnectiveNode: connectiveNode, // 不为空
+                    nextVagrantNode: null
+                }
+            }
 
             // 进行该规则的下一步，流浪节点将根据该规则进行计算
             connectiveNode.progress.nextStep()
 
-            // 比较连接节点和流浪节点的泛型即可确定指令
-            let operation = this._parse(connectiveNode.progress, vagrantNode)
+            // 返回指令
+            let operation = connectiveNode.progress.consume(vagrantNode)
             console.info(`type: ${operation.type}`)
 
             // 按指令进行操作
-            let result = operation.do(connectiveNode, vagrantNode)
+            let { nextConnectiveNode, nextVagrantNode } = operation.do(connectiveNode, vagrantNode)
 
-            // 所有方案全部失败
-            if (!result.nextConnectiveNode) {
-                return null // 失败返回
+            // 匹配失败返回
+            if (!nextConnectiveNode) {
+                if (!nextVagrantNode) { throw new AssertError('nextVagrantNode can not be null') }
+                return {
+                    nextConnectiveNode: null,
+                    nextVagrantNode // 不为空
+                }
             }
 
-            connectiveNode = result.nextConnectiveNode
-
-            if (result.nextVagrantNode !== undefined) {
-                vagrantNode = result.nextVagrantNode
-            }
+            connectiveNode = nextConnectiveNode
+            vagrantNode = nextVagrantNode
         }
     }
 

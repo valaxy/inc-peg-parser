@@ -19,8 +19,8 @@ export default class BackOperation extends TreeOperation {
             // 已经回溯到根节点的nextChoice还是失败, 匹配已经彻底没戏了
             if (!connective) {
                 return {
-                    nextConnectiveNode: null, // 失败的固定协议: 双null
-                    nextVagrantNode: null
+                    nextConnectiveNode: null, // 失败的协议, nextConnectiveNode为nulll
+                    nextVagrantNode: vagrant
                 }
             }
 

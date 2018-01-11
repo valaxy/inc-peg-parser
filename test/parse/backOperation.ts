@@ -13,7 +13,7 @@ describe('BackOperation', function() {
         let connective = new ParsingNode(rule)
         let vagrant = new ParsingNode('x')
 
-        checkOperationResult(op.do(connective, vagrant), null, null)
+        checkOperationResult(op.do(connective, vagrant), null, vagrant)
     })
 
     it('fail 2', function() {
@@ -24,7 +24,7 @@ describe('BackOperation', function() {
         connective.add(subNode)
         let vagrant = new ParsingNode('x')
 
-        checkOperationResult(op.do(subNode, vagrant), null, null)
+        checkOperationResult(op.do(subNode, vagrant), null, vagrant)
     })
 
     it('simple nextChoice 1', function() {
