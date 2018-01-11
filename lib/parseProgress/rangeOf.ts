@@ -1,7 +1,9 @@
 import ParseProgress from './parseProgress'
 import RangeOf from '../form/rangeOf'
 import ParsingNode from '../parsing/parsingNode'
-import TreeOperation from '../parsing/treeOperation'
+import BreakOperation from '../parsing/breakOperation'
+import ConnectOperation from '../parsing/connectOperation'
+import BackOperation from '../parsing/backOperation'
 
 export default class RangeOfProgress extends ParseProgress {
     private _trying: boolean = false
@@ -30,12 +32,12 @@ export default class RangeOfProgress extends ParseProgress {
     consume(vagrant: ParsingNode) {
         if (vagrant.isTerminal) {
             if (this._accept(vagrant.character)) {
-                return TreeOperation.connect()
+                return new ConnectOperation()
             } else {
-                return TreeOperation.back()
+                return new BackOperation()
             }
         }
 
-        return TreeOperation.break()
+        return new BreakOperation()
     }
 }

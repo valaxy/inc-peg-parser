@@ -1,7 +1,8 @@
 import ParseProgress from './ParseProgress'
 import Choice from '../form/choice'
 import ParsingNode from '../parsing/parsingNode'
-import TreeOperation from '../parsing/treeOperation'
+import DescendOperation from '../parsing/descendOperation'
+import BreakOperation from '../parsing/breakOperation'
 
 class ChoiceProgress extends ParseProgress {
     private _choice: number = -1
@@ -32,16 +33,16 @@ class ChoiceProgress extends ParseProgress {
 
     consume(vagrant: ParsingNode) {
         if (vagrant.isTerminal) {
-            return TreeOperation.descend(new ParsingNode(this.currentSubForm))
+            return new DescendOperation(new ParsingNode(this.currentSubForm))
         }
 
         // 流浪节点若相同可以直接合并
         if (this.currentSubForm === vagrant.form) {
-            return TreeOperation.descend(new ParsingNode(vagrant.form))
+            return new DescendOperation(new ParsingNode(vagrant.form))
         }
 
         // 无法合并
-        return TreeOperation.break()
+        return new BreakOperation()
     }
 }
 

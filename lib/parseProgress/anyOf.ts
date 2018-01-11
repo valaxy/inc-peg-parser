@@ -1,7 +1,8 @@
 import ParseProgress from './parseProgress'
 import AnyOf from '../form/anyOf'
 import ParsingNode from '../parsing/parsingNode'
-import TreeOperation from '../parsing/treeOperation'
+import ConnectOperation from '../parsing/connectOperation'
+import BackOperation from '../parsing/backOperation'
 
 class AnyOfProgress extends ParseProgress {
     private _trying: boolean = false // 只有唯一的状态
@@ -29,9 +30,9 @@ class AnyOfProgress extends ParseProgress {
     consume(vagrant: ParsingNode) {
         if (vagrant.isTerminal) {
             if (this._accept(vagrant.character)) {
-                return TreeOperation.connect()
+                return new ConnectOperation()
             } else {
-                return TreeOperation.back()
+                return new BackOperation()
             }
         }
 

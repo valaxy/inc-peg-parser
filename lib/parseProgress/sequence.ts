@@ -1,7 +1,9 @@
 import ParseProgress from './parseProgress'
 import Sequence from '../form/sequence'
 import ParsingNode from '../parsing/parsingNode'
-import TreeOperation from '../parsing/treeOperation'
+import BreakOperation from '../parsing/breakOperation'
+import ConnectOperation from '../parsing/connectOperation'
+import DescendOperation from '../parsing/descendOperation'
 
 class SequenceProgress extends ParseProgress {
     private _step = -1
@@ -29,16 +31,16 @@ class SequenceProgress extends ParseProgress {
 
     consume(vagrant: ParsingNode) {
         if (vagrant.isTerminal) {
-            return TreeOperation.descend(new ParsingNode(this.currentSubForm))
+            return new DescendOperation(new ParsingNode(this.currentSubForm))
         }
 
         // 流浪节点可以直接合并
         if (this.currentSubForm === vagrant.form) {
-            return TreeOperation.connect()
+            return new ConnectOperation()
         }
 
         // 无法合并
-        return TreeOperation.break()
+        return new BreakOperation()
     }
 }
 

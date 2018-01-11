@@ -3,6 +3,10 @@ import Optional from '../form/optional'
 import ParsingNode from '../parsing/parsingNode'
 import TreeOperation from '../parsing/treeOperation'
 import AssertError from '../assertError'
+import BreakOperation from '../parsing/breakOperation'
+import ConnectOperation from '../parsing/connectOperation'
+import DescendOperation from '../parsing/descendOperation'
+import SealOperation from '../parsing/sealOperation'
 
 export default class OptionalProgress extends ParseProgress {
     // 当前是否正在尝试匹配子规则
@@ -49,17 +53,17 @@ export default class OptionalProgress extends ParseProgress {
 
             // 首次尝试匹配子规则的阶段
             if (vagrant.isTerminal) {
-                return TreeOperation.descend(new ParsingNode(this._optional.subForm))
+                return new DescendOperation(new ParsingNode(this._optional.subForm))
             } else {
                 if (this._optional.subForm == vagrant.form) {
-                    return TreeOperation.connect()
+                    return new ConnectOperation()
                 } else {
-                    return TreeOperation.break()
+                    return new BreakOperation()
                 }
             }
         }
 
         // 匹配空字符串
-        return TreeOperation.seal()
+        return new SealOperation()
     }
 }

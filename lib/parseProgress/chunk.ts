@@ -1,8 +1,9 @@
 import ParseProgress from './parseProgress'
 import Chunk from '../form/chunk'
 import ParsingNode from '../parsing/parsingNode'
-import TreeOperation from '../parsing/treeOperation'
-
+import BreakOperation from '../parsing/breakOperation'
+import ConnectOperation from '../parsing/connectOperation'
+import BackOperation from '../parsing/backOperation'
 
 class ChunkProgress extends ParseProgress {
     private _choice = -1
@@ -34,13 +35,13 @@ class ChunkProgress extends ParseProgress {
     consume(vagrant: ParsingNode) {
         if (vagrant.isTerminal) {
             if (this.currentCharacter == vagrant.character) {
-                return TreeOperation.connect()
+                return new ConnectOperation()
             }
 
-            return TreeOperation.back()
+            return new BackOperation()
         }
 
-        return TreeOperation.break()
+        return new BreakOperation()
     }
 }
 
