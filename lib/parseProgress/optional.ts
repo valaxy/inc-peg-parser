@@ -24,6 +24,7 @@ export default class OptionalProgress extends ParseProgress {
     nextChoice() {
         if (this._trying) {
             this._trying = false
+            this._matchCount = 0
             return true
         } else {
             return false
@@ -36,14 +37,19 @@ export default class OptionalProgress extends ParseProgress {
             return
         }
 
-        throw new AssertError(`do not have nextStep when _trying === false`)
+        this._matchCount += 1
+        if (this._matchCount > 1) {
+            throw new AssertError(`impossible _matchCount > 1 when _trying === false`)
+        }
     }
 
     hasNextStep() {
         if (this._trying) {
-            return this._matchCount === 0
+            return this._matchCount == 0
+        } else if (this._matchCount == 0) {
+            return true // 作为一个特例, 第一步是匹配空字符串用的
         } else {
-            return false
+            return false // 可选状态只有一步
         }
     }
 

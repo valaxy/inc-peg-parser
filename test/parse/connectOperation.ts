@@ -13,7 +13,7 @@ describe('ConnectOperation', function() {
         let connective = new ParsingNode(rule)
         let vagrant = new ParsingNode('a')
         checkOperationResult(op.do(connective, vagrant), connective, null)
-        checkTreeEqual(connective, createTree([rule, ['a']]))
+        checkTreeEqual(connective, createTree([rule, [['a']]]))
     })
 
     it('last 2 vagrants', function() {
@@ -23,10 +23,10 @@ describe('ConnectOperation', function() {
         vagrant.nextVagrantNode = vagrant2
 
         checkOperationResult(op.do(connective, vagrant), connective, vagrant2)
-        checkTreeEqual(connective, createTree([rule, ['a']]))
+        checkTreeEqual(connective, createTree([rule, [['a']]]))
         assert.equal(vagrant.nextVagrantNode, null)
 
         checkOperationResult(op.do(connective, vagrant2), connective, null)
-        checkTreeEqual(connective, createTree([rule, ['a', 'b']]))
+        checkTreeEqual(connective, createTree([rule, [['a'], ['b']]]))
     })
 })

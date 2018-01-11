@@ -15,6 +15,6 @@ describe('DescendOperation', function() {
         let connective = new ParsingNode(rule)
         let vagrant = new ParsingNode('x')
         checkOperationResult(op.do(connective, vagrant), generate, vagrant)
-        checkTreeEqual(connective, createTree([rule, [subRule]]))
+        checkTreeEqual(connective, createTree([rule, [[subRule]]]))
     })
 })
